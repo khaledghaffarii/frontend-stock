@@ -16,9 +16,12 @@ import {
   CardsWidget20,
   ListsWidget26,
   EngageWidget10,
+  StatisticsWidget5,
 } from '../../../_metronic/partials/widgets'
 import {TotalCutomer} from '../../modules/widgets/TotalCustomers'
 import {TotalSupplier} from '../../modules/widgets/TotalSupplier'
+import {TotalPurchase} from '../../modules/widgets/TotalPurshase'
+import {TotalProduct} from '../../modules/widgets/TotalProduct'
 
 const DashboardPage: FC = () => (
   <>
@@ -31,10 +34,94 @@ const DashboardPage: FC = () => (
           color='#F1416C'
           img={toAbsoluteUrl('/media/patterns/vector-1.png')}
         /> */}
-        <div className='d-flex flex-md-row h-md-50 mb-5 mb-xl-10'>
-          <TotalCutomer className='card-xxl-stretch mb-xl-3 m-5' />
-          <TotalSupplier className='card-xxl-stretch mb-xl-3 m-5' />
+        <div className='row g-5 g-xl-8'>
+          <div className='col-xl-3'>
+            {/* <TotalCutomer
+              className='card-xl-stretch mb-xl-8'
+              svgIcon='/media/icons/duotune/user/customer.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            /> */}
+          </div>
+          <div className='col-xl-3'>
+            <TotalSupplier
+              className='card-xl-stretch mb-xl-8'
+              //public\media\icons\duotune\user\supplier.svg
+              svgIcon='/media/icons/duotune/user/supplier.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+          <div className='col-xl-3'>
+            <TotalPurchase
+              className='card-xl-stretch mb-xl-8'
+              svgIcon='/media/icons/duotune/user/purchase.svg'
+              color='white'
+              iconColor='warning'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+          <div className='col-xl-3'>
+            <TotalProduct
+              className='card-xl-stretch mb-xl-8'
+              //public\media\icons\duotune\user\supplier.svg
+              svgIcon='/media/icons/duotune/user/product.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
         </div>
+        {/* <div className='row g-5 g-xl-8'>
+          <div className='col-xl-3'>
+            <TotalCutomer
+              className='card-xl-stretch mb-xl-8'
+              svgIcon='/media/icons/duotune/communication/com006.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+          <div className='col-xl-3'>
+            <TotalSupplier
+              className='card-xl-stretch mb-xl-8'
+              //public\media\icons\duotune\user\supplier.svg
+              svgIcon='/media/icons/duotune/finance/fin006.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+          <div className='col-xl-3'>
+            <TotalCutomer
+              className='card-xl-stretch mb-xl-8'
+              svgIcon='/media/icons/duotune/communication/com006.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+          <div className='col-xl-3'>
+            <TotalSupplier
+              className='card-xl-stretch mb-xl-8'
+              //public\media\icons\duotune\user\supplier.svg
+              svgIcon='/media/icons/duotune/graphs/gra005.svg'
+              color='white'
+              iconColor='primary'
+              title='500M$'
+              description='SAP UI Progress'
+            />
+          </div>
+        </div> */}
 
         {/* <CardsWidget7
           className='h-md-50 mb-5 mb-xl-10'

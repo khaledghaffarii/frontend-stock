@@ -36,7 +36,7 @@ const QueryResponseProvider: FC<WithChildren> = ({children}) => {
     `${QUERIES.CLIENTS_LIST}-${query}`,
     () => {
       if (auth && auth.token) {
-        return getSupplier(auth.token)
+        return getSupplier(query, auth.token)
       }
     },
     {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}

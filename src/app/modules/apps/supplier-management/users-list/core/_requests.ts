@@ -5,7 +5,7 @@ import {Supplier, SuppliersQueryResponse} from './_models'
 const API_URL = process.env.REACT_APP_API_URL
 const Supplier_URL = `${API_URL}/suppliers`
 
-const getSupplier = (token: string): Promise<SuppliersQueryResponse> => {
+const getSupplier = (query: string, token: string): Promise<SuppliersQueryResponse> => {
   return axios
     .get(`${Supplier_URL}`, {
       headers: {

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {KTSVG} from '../../../_metronic/helpers'
 
 import {useAuth} from '../auth'
-import {getTotalSupplier} from '../apps/supplier-management/users-list/core/_requests'
+
 import {useNavigate} from 'react-router-dom'
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
   descriptionColor?: string
 }
 
-const TotalSupplier: React.FC<Props> = ({
+const TotalProduct: React.FC<Props> = ({
   className,
   color,
   svgIcon,
@@ -30,21 +30,21 @@ const TotalSupplier: React.FC<Props> = ({
   const [dataNbeSupplier, setDataNbeSupplier] = useState<any>([''])
   const navigate = useNavigate()
   const {currentUser, auth} = useAuth()
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = auth?.token
-        if (token) {
-          const data = await getTotalSupplier(token)
-          //@ts-ignore
-          setDataNbeSupplier(data?.data.totalSuppliers)
-        }
-      } catch (error) {
-        console.log('🚀 ~ fetchData ~ error:', error)
-      }
-    }
-    fetchData()
-  }, [])
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       try {
+  //         const token = auth?.token
+  //         if (token) {
+  //           const data = await getTotalProduct(token)
+  //           //@ts-ignore
+  //           setDataNbeSupplier(data?.data.totalProducts)
+  //         }
+  //       } catch (error) {
+  //         console.log('🚀 ~ fetchData ~ error:', error)
+  //       }
+  //     }
+  //     fetchData()
+  //   }, [])
   return (
     <p
       onClick={() => {
@@ -53,20 +53,20 @@ const TotalSupplier: React.FC<Props> = ({
       style={{cursor: 'pointer'}}
       className={`card bg-${color} hoverable ${className}`}
     >
-      <div className='d-flex flex-row w-25'>
+      <div className='d-flex flex-row w-75'>
         <div className='card-body'>
           <KTSVG
             path={svgIcon}
-            className={`svg-icon-${iconColor} svg-icon-5x ms-n1 text-danger `}
+            className={`svg-icon-${iconColor} svg-icon-5x ms-n1 text-success `}
           />
         </div>
         <div className='d-flex flex-column mt-5'>
-          <div className={`text-dark  fw-bold fs-1  mt-2`}> Fournisseurs</div>
-          <div className={`text-dark  fw-bold fs-1 mb-2 `}>{dataNbeSupplier} </div>
+          <div className={`text-primary  fw-bold fs-2  mt-5`}> Stock product</div>
+          <div className={`text-primary  fw-bold fs-2 mb-2 `}>150 </div>
         </div>
       </div>
     </p>
   )
 }
 
-export {TotalSupplier}
+export {TotalProduct}

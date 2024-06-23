@@ -1,30 +1,103 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import {useState, useEffect} from 'react'
-import {initialQueryState, KTSVG, useDebounce} from '../../../../../../../_metronic/helpers'
+import {useEffect, useState} from 'react'
+import {
+  ExportModal,
+  KTSVG,
+  exportExcel,
+  exportPDF,
+  stringifyRequestQuery,
+  useDebounce,
+} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
+import {useQueryResponse, useQueryResponseData} from '../../core/QueryResponseProvider'
+
+import {useAuth} from '../../../../../auth'
+import {createMultipleSuppliers, getSupplier} from '../../core/_requests'
+import {SupplierListLoading} from '../loading/SupplierListLoading'
 
 const SupplierListSearchComponent = () => {
   const {updateState} = useQueryRequest()
+  const {refetch} = useQueryResponse()
+  const suppliers = useQueryResponseData()
   const [searchTerm, setSearchTerm] = useState<string>('')
-  // Debounce search term so that it only gives us latest value ...
-  // ... if searchTerm has not been updated within last 500ms.
-  // The goal is to only have the API call fire when user stops typing ...
-  // ... so that we aren't hitting our API rapidly.
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false) // État de chargement
+  const {currentUser, auth} = useAuth()
   const debouncedSearchTerm = useDebounce(searchTerm, 150)
-  // Effect for API call
-  useEffect(
-    () => {
-      if (debouncedSearchTerm !== undefined && searchTerm !== undefined) {
-        updateState({search: debouncedSearchTerm, ...initialQueryState})
+  const [data, setData] = useState<any>({})
+  const {state} = useQueryRequest()
+  const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = auth?.token
+        if (token) {
+          const data = await getSupplier(query, token)
+          //@ts-ignore
+          setData(data?.data)
+        }
+      } catch (error) {
+        console.log('🚀 ~ fetchData ~ error:', error)
       }
-    },
-    [debouncedSearchTerm] // Only call effect if debounced search term changes
-    // More details about useDebounce: https://usehooks.com/useDebounce/
-  )
+    }
+    fetchData()
+  }, [])
+
+  const handleExport = (format: any) => {
+    if (format === 'pdf') {
+      exportPDF(suppliers)
+    } else if (format === 'excel') {
+      exportExcel(suppliers)
+    }
+    setIsModalOpen(false)
+  }
+
+  useEffect(() => {
+    if (debouncedSearchTerm !== undefined) {
+      updateState({search: debouncedSearchTerm})
+    }
+  }, [debouncedSearchTerm])
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setIsLoading(true) // Début du chargement
+      try {
+        const token: any = auth?.token // Récupérez le token d'authentification
+        await createMultipleSuppliers(file, token)
+        await refetch() // Rafraîchit les données après importation
+      } catch (error) {
+        console.log('🚀 ~ handleFileChange ~ error:', error)
+        console.error("Erreur lors de l'importation des suppliers:", error)
+      } finally {
+        setIsLoading(false) // Fin du chargement
+      }
+    }
+  }
 
   return (
-    <div className='card-title'>
-      {/* begin::Search */}
+    <div className='d-flex flex-md-row w-75 justify-content-between'>
+      {isLoading && <SupplierListLoading />} {/* Affichage de l'indicateur de chargement */}
+      <div className='mt-2 mx-5'>
+        <button
+          disabled={Object.keys(data).length == 0 ? true : false}
+          type='button'
+          className='btn btn-light-primary me-3'
+          onClick={() => setIsModalOpen(true)}
+        >
+          <KTSVG path='/media/icons/duotune/arrows/arr078.svg' className='svg-icon-2' />
+          Export
+        </button>
+        <label className='btn btn-light-primary me-3'>
+          <KTSVG path='/media/icons/duotune/arrows/arr077.svg' className='svg-icon-2' />
+          Import
+          <input
+            type='file'
+            accept='.xlsx, .xls'
+            onChange={handleFileChange}
+            style={{display: 'none'}}
+          />
+        </label>
+      </div>
       <div className='d-flex align-items-center position-relative my-1'>
         <KTSVG
           path='/media/icons/duotune/general/gen021.svg'
@@ -33,13 +106,17 @@ const SupplierListSearchComponent = () => {
         <input
           type='text'
           data-kt-user-table-filter='search'
-          className='form-control form-control-solid w-250px ps-14'
-          placeholder='Search user'
+          className='form-control form-control-solid w-750px ps-14'
+          placeholder='recherche fournisseur'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      {/* end::Search */}
+      <ExportModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        onExport={handleExport}
+      />
     </div>
   )
 }

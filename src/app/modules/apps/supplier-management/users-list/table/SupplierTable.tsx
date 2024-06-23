@@ -3,20 +3,34 @@ import {useTable, ColumnInstance, Row} from 'react-table'
 import {CustomHeaderColumn} from './columns/CustomHeaderColumn'
 import {CustomRow} from './columns/CustomRow'
 import {useQueryResponseData, useQueryResponseLoading} from '../core/QueryResponseProvider'
-import {supplierColumns} from './columns/_columns'
+
 import {Supplier} from '../core/_models'
 import {SupplierListLoading} from '../components/loading/SupplierListLoading'
 import {SupplierListPagination} from '../components/pagination/SupplierListPagination'
 import {KTCardBody} from '../../../../../../_metronic/helpers'
+import {useQueryRequest} from '../core/QueryRequestProvider'
+import {supplierColumns} from './columns/_columns'
 
 const SupplierTable = () => {
-  const supplier = useQueryResponseData()
+  const {state} = useQueryRequest()
+  const clients = useQueryResponseData()
   const isLoading = useQueryResponseLoading()
-  const data = useMemo(() => supplier, [supplier])
+
+  const filteredData = useMemo(() => {
+    if (!state.search) return clients
+    return clients.filter(
+      (client: Supplier) =>
+        //@ts-ignore
+        client?.fullname?.toLowerCase().includes(state.search.toLowerCase()) ||
+        //@ts-ignore
+        client?.email?.toLowerCase().includes(state?.search?.toLowerCase())
+    )
+  }, [clients, state.search])
+
   const columns = useMemo(() => supplierColumns, [])
-  const {getTableProps, getTableBodyProps, headers, rows, prepareRow} = useTable({
+  const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = useTable({
     columns,
-    data,
+    data: filteredData,
   })
 
   return (
@@ -28,11 +42,16 @@ const SupplierTable = () => {
           {...getTableProps()}
         >
           <thead>
-            <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
-              {headers.map((column: ColumnInstance<Supplier>) => (
-                <CustomHeaderColumn key={column.id} column={column} />
-              ))}
-            </tr>
+            {headerGroups.map((headerGroup) => (
+              <tr
+                {...headerGroup.getHeaderGroupProps()}
+                className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'
+              >
+                {headerGroup.headers.map((column: ColumnInstance<Supplier>) => (
+                  <CustomHeaderColumn key={column.id} column={column} />
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody className='text-gray-600 fw-bold' {...getTableBodyProps()}>
             {rows.length > 0 ? (
@@ -42,7 +61,7 @@ const SupplierTable = () => {
               })
             ) : (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={columns.length}>
                   <div className='d-flex text-center w-100 align-content-center justify-content-center'>
                     No matching records found
                   </div>

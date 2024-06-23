@@ -13,7 +13,7 @@ const SidebarMenuMain = () => {
       <SidebarMenuItem
         to='/dashboard'
         icon='/media/icons/duotune/art/art002.svg'
-        title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
+        title='Tableau de board'
         fontIcon='bi-app-indicator'
       />
       {/* <SidebarMenuItem
@@ -100,14 +100,14 @@ const SidebarMenuMain = () => {
       </div>
       <SidebarMenuItem
         to='/apps/client-management/clients'
-        icon='/media/icons/duotune/general/gen051.svg'
-        title='Client management'
+        icon='/media/icons/duotune/communication/com006.svg'
+        title='Gestion des clients'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
         to='/apps/supplier-management/suppliers'
-        icon='/media/icons/duotune/general/gen051.svg'
-        title='Supplier management'
+        icon='/media/icons/duotune/finance/fin006.svg'
+        title='Gestion des fournisseurs'
         fontIcon='bi-layers'
       />
       {/* <SidebarMenuItemWithSub
