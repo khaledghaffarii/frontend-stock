@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import {KTSVG, toAbsoluteUrl} from '../../../helpers'
 import {HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher} from '../../../partials'
 import {useLayout} from '../../core'
+import {useAuth} from '../../../../app/modules/auth'
 
 const itemClass = 'ms-1 ms-lg-3'
 const btnClass =
@@ -10,6 +11,7 @@ const userAvatarClass = 'symbol-35px symbol-md-40px'
 const btnIconClass = 'svg-icon-1'
 
 const Navbar = () => {
+  const {currentUser, logout} = useAuth()
   const {config} = useLayout()
   return (
     <div className='app-navbar flex-shrink-0'>
@@ -48,12 +50,13 @@ const Navbar = () => {
 
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
-          className={clsx('cursor-pointer symbol', userAvatarClass)}
+          className={clsx('cursor-pointer symbol ', userAvatarClass)}
           data-kt-menu-trigger="{default: 'click'}"
           data-kt-menu-attach='parent'
           data-kt-menu-placement='bottom-end'
         >
-          <img src={toAbsoluteUrl('/media/avatars/300-1.jpg')} alt='' />
+          <img className='m-2' src={toAbsoluteUrl('/media/avatars/blank.png')} alt='' />
+          {/* <span className='fw-bold'>{currentUser?.fullName}</span> */}
         </div>
         <HeaderUserMenu />
       </div>

@@ -51,9 +51,9 @@ const ClientView: React.FC<Props> = ({className, client}) => {
       .min(3, 'Minimum 3 caractères')
       .max(50, 'Maximum 50 caractères')
       .required('Le nom est requis'),
-    status: Yup.string()
-      .oneOf(['vendu', 'annulé', 'en attente', 'reporter'], 'Statut invalide')
-      .required('Le statut est requis'),
+    // status: Yup.string()
+    //   .oneOf(['vendu', 'annulé', 'en attente', 'reporter'], 'Statut invalide')
+    //   .required('Le statut est requis'),
     telephone: Yup.string()
       .min(8, 'Minimum 8 caractères')
       .max(8, 'Maximum 8 caractères')
@@ -65,7 +65,7 @@ const ClientView: React.FC<Props> = ({className, client}) => {
       fullname: clientData?.fullname,
       email: clientData?.email,
       address: clientData?.address,
-      telephone: clientData?.telephone,
+      telephone: clientData?.phone,
       status: clientData?.status,
       createdAt: clientData?.createdAt,
     },
@@ -224,7 +224,7 @@ const ClientView: React.FC<Props> = ({className, client}) => {
                 </div>
               )}
             </div>
-            <div className='fv-row mb-7'>
+            {/* <div className='fv-row mb-7'>
               <label className='required fw-bold fs-6 mb-2'>Statut</label>
               <select
                 aria-label='Default select example'
@@ -253,7 +253,7 @@ const ClientView: React.FC<Props> = ({className, client}) => {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div className='text-center pt-15'>

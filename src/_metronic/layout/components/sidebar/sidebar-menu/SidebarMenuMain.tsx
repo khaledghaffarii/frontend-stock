@@ -104,6 +104,12 @@ const SidebarMenuMain = () => {
         title='Client management'
         fontIcon='bi-layers'
       />
+      <SidebarMenuItem
+        to='/apps/supplier-management/suppliers'
+        icon='/media/icons/duotune/general/gen051.svg'
+        title='Supplier management'
+        fontIcon='bi-layers'
+      />
       {/* <SidebarMenuItemWithSub
         to='/apps/chat'
         title='Chat'

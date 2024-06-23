@@ -10,11 +10,11 @@ export function Settings() {
   return (
     <>
       <ProfileDetails />
-      <SignInMethod />
+      {/* <SignInMethod />
       <ConnectedAccounts />
       <EmailPreferences />
       <Notifications />
-      <DeactivateAccount />
+      <DeactivateAccount /> */}
     </>
   )
 }

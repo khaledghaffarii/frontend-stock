@@ -17,41 +17,45 @@ import {
   ListsWidget26,
   EngageWidget10,
 } from '../../../_metronic/partials/widgets'
+import {TotalCutomer} from '../../modules/widgets/TotalCustomers'
+import {TotalSupplier} from '../../modules/widgets/TotalSupplier'
 
 const DashboardPage: FC = () => (
   <>
     {/* begin::Row */}
     <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget20
+      <div className='col-md-6 col-lg-12 col-xl-12 col-xxl-12 mb-md-5 mb-xl-10'>
+        {/* <CardsWidget20
           className='h-md-50 mb-5 mb-xl-10'
           description='Active Projects'
           color='#F1416C'
           img={toAbsoluteUrl('/media/patterns/vector-1.png')}
-        />
-        <CardsWidget7
+        /> */}
+        <div className='d-flex flex-md-row h-md-50 mb-5 mb-xl-10'>
+          <TotalCutomer className='card-xxl-stretch mb-xl-3 m-5' />
+          <TotalSupplier className='card-xxl-stretch mb-xl-3 m-5' />
+        </div>
+
+        {/* <CardsWidget7
           className='h-md-50 mb-5 mb-xl-10'
           description='Professionals'
           icon={false}
           stats={357}
           labelColor='dark'
           textColor='gray-300'
-        />
+        /> */}
       </div>
-      {/* end::Col */}
 
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
+      {/* <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
         <CardsWidget17 className='h-md-50 mb-5 mb-xl-10' />
         <ListsWidget26 className='h-lg-50' />
-      </div>
+      </div> */}
       {/* end::Col */}
 
       {/* begin::Col */}
-      <div className='col-xxl-6'>
+      {/* <div className='col-xxl-6'>
         <EngageWidget10 className='h-md-100' />
-      </div>
+      </div> */}
       {/* end::Col */}
     </div>
     {/* end::Row */}

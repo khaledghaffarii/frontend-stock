@@ -5,6 +5,8 @@ import {Modal, Button} from 'react-bootstrap'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import * as XLSX from 'xlsx'
+import {useAuth} from '../../../app/modules/auth'
+
 export const exportPDF = (data: any) => {
   const doc = new jsPDF()
   const tableColumn = ['Full Name', 'Email', 'Phone', 'Address', 'Status']

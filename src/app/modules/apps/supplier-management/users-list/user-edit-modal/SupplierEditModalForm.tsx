@@ -2,20 +2,20 @@ import {FC, useState} from 'react'
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
 import {isNotEmpty, toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {Client} from '../core/_models'
+import {Supplier} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
-import {ClientListLoading} from '../components/loading/ClientListLoading'
-import {createClient, updateClient} from '../core/_requests'
+import {SupplierListLoading} from '../components/loading/SupplierListLoading'
+import {createSupplier, updateSupplier} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {useAuth} from '../../../../auth'
 
 type Props = {
   isUserLoading: boolean
-  client: Client
+  supplier: Supplier
 }
 
-const editUserSchema = Yup.object().shape({
+const editSupplierSchema = Yup.object().shape({
   email: Yup.string()
     .email("Format d'email incorrect")
     .min(3, 'Minimum 3 caractères')
@@ -38,20 +38,20 @@ const editUserSchema = Yup.object().shape({
     .required('Le phone est requis'),
 })
 
-const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
+const SupplierEditModalForm: FC<Props> = ({supplier, isUserLoading}) => {
   const {setItemIdForUpdate} = useListView()
   const {refetch} = useQueryResponse()
   const {currentUser, auth} = useAuth()
   //@ts-ignore
   const token: string = auth?.token
-  const [userForEdit] = useState<Client>({
-    ...client,
-    fullname: client.fullname,
-    email: client.email,
-    address: client.address,
-    company: client.company,
-    phone: client.phone,
-    status: client.status,
+  const [userForEdit] = useState<Supplier>({
+    ...supplier,
+    fullname: supplier.fullname,
+    email: supplier.email,
+    address: supplier.address,
+    company: supplier.company,
+    phone: supplier.phone,
+    status: supplier.status,
   })
 
   const cancel = (withRefresh?: boolean) => {
@@ -66,13 +66,13 @@ const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
 
   const formik = useFormik({
     initialValues: userForEdit,
-    validationSchema: editUserSchema,
+    validationSchema: editSupplierSchema,
     onSubmit: async (values, {setSubmitting}) => {
       console.log('🚀 ~ onSubmit: ~ values:', values)
       setSubmitting(true)
       try {
-        if (client) {
-          await createClient(values, token)
+        if (supplier) {
+          await createSupplier(values, token)
           setTimeout(() => {
             setSubmitting(false)
             cancel(true)
@@ -286,9 +286,9 @@ const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
         </div>
         {/* end::Actions */}
       </form>
-      {(formik.isSubmitting || isUserLoading) && <ClientListLoading />}
+      {(formik.isSubmitting || isUserLoading) && <SupplierListLoading />}
     </>
   )
 }
 
-export {ClientEditModalForm}
+export {SupplierEditModalForm}

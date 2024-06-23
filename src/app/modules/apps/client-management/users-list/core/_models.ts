@@ -4,10 +4,11 @@ export type Client = {
   address?: string
   createdAt?: Date
   email?: string
+  company?: string
   fullname?: string
   id?: ID
   status?: string
-  telephone?: string
+  phone?: string
   updatedAt?: Date
 }
 export type ClientsQueryResponse = Response<Array<Client>>

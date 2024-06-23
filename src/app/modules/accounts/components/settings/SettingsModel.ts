@@ -1,5 +1,9 @@
+import {getCurrentUrl} from '../../../../../_metronic/helpers'
+console.log('🚀 ~ getCurrentUrl:', getCurrentUrl)
+
 export interface IProfileDetails {
   avatar: string
+  fullName: string
   fName: string
   lName: string
   company: string
@@ -71,6 +75,7 @@ export interface IDeactivateAccount {
 }
 
 export const profileDetailsInitValues: IProfileDetails = {
+  fullName: 'test',
   avatar: '/media/avatars/300-1.jpg',
   fName: 'Max',
   lName: 'Smith',

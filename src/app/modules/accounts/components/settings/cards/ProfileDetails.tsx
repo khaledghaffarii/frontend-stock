@@ -5,7 +5,7 @@ import * as Yup from 'yup'
 import {useFormik} from 'formik'
 
 const profileDetailsSchema = Yup.object().shape({
-  fName: Yup.string().required('First name is required'),
+  fullName: Yup.string().required('First name is required'),
   lName: Yup.string().required('Last name is required'),
   company: Yup.string().required('Company name is required'),
   contactPhone: Yup.string().required('Contact phone is required'),
@@ -58,7 +58,7 @@ const ProfileDetails: React.FC = () => {
       <div id='kt_account_profile_details' className='collapse show'>
         <form onSubmit={formik.handleSubmit} noValidate className='form'>
           <div className='card-body border-top p-9'>
-            <div className='row mb-6'>
+            {/* <div className='row mb-6'>
               <label className='col-lg-4 col-form-label fw-bold fs-6'>Avatar</label>
               <div className='col-lg-8'>
                 <div
@@ -72,7 +72,7 @@ const ProfileDetails: React.FC = () => {
                   ></div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className='row mb-6'>
               <label className='col-lg-4 col-form-label required fw-bold fs-6'>Full Name</label>
@@ -84,11 +84,11 @@ const ProfileDetails: React.FC = () => {
                       type='text'
                       className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
                       placeholder='First name'
-                      {...formik.getFieldProps('fName')}
+                      {...formik.getFieldProps('fullName')}
                     />
-                    {formik.touched.fName && formik.errors.fName && (
+                    {formik.touched.fullName && formik.errors.fullName && (
                       <div className='fv-plugins-message-container'>
-                        <div className='fv-help-block'>{formik.errors.fName}</div>
+                        <div className='fv-help-block'>{formik.errors.fullName}</div>
                       </div>
                     )}
                   </div>
@@ -148,7 +148,7 @@ const ProfileDetails: React.FC = () => {
               </div>
             </div>
 
-            <div className='row mb-6'>
+            {/* <div className='row mb-6'>
               <label className='col-lg-4 col-form-label fw-bold fs-6'>
                 <span className='required'>Company Site</span>
               </label>
@@ -166,9 +166,9 @@ const ProfileDetails: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
 
-            <div className='row mb-6'>
+            {/* <div className='row mb-6'>
               <label className='col-lg-4 col-form-label fw-bold fs-6'>
                 <span className='required'>Country</span>
               </label>
@@ -759,7 +759,7 @@ const ProfileDetails: React.FC = () => {
                   <label className='form-check-label'></label>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className='card-footer d-flex justify-content-end py-6 px-9'>
