@@ -10,12 +10,12 @@ import {
   stringifyRequestQuery,
   WithChildren,
 } from '../../../../../../_metronic/helpers'
-import {getClient} from './_requests'
-import {Client} from './_models'
+import {getProduct} from './_requests'
+import {Product} from './_models'
 import {useQueryRequest} from './QueryRequestProvider'
 import {useAuth} from '../../../../auth'
 
-const QueryResponseContext = createResponseContext<Client>(initialQueryResponse)
+const QueryResponseContext = createResponseContext<Product>(initialQueryResponse)
 const QueryResponseProvider: FC<WithChildren> = ({children}) => {
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
@@ -36,7 +36,7 @@ const QueryResponseProvider: FC<WithChildren> = ({children}) => {
     `${QUERIES.CLIENTS_LIST}-${query}`,
     () => {
       if (auth && auth.token) {
-        return getClient(query, auth.token)
+        return getProduct(query, auth.token)
       }
     },
     {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}

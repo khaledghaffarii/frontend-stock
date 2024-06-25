@@ -15,7 +15,7 @@ const mappedLabel = (label: string): string => {
   return label
 }
 
-const ClientListPagination = () => {
+const CategoryListPagination = () => {
   const pagination = useQueryResponsePagination()
   const isLoading = useQueryResponseLoading()
   const {updateState} = useQueryRequest()
@@ -66,4 +66,4 @@ const ClientListPagination = () => {
   )
 }
 
-export {ClientListPagination}
+export {CategoryListPagination}

@@ -120,6 +120,19 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem to='/apps/chat/group-chat' title='Group Chart' hasBullet={true} />
         <SidebarMenuItem to='/apps/chat/drawer-chat' title='Drawer Chart' hasBullet={true} />
       </SidebarMenuItemWithSub> */}
+      <SidebarMenuItemWithSub
+        to='/apps/category-management'
+        title='Produit stock'
+        fontIcon='bi-chat-left'
+        icon='/media/icons/duotune/user/product.svg'
+      >
+        <SidebarMenuItem
+          to='/apps/category-management/category'
+          title='Catégories'
+          hasBullet={true}
+        />
+        <SidebarMenuItem to='apps/product-management/product' title='Produits' hasBullet={true} />
+      </SidebarMenuItemWithSub>
       {/* <SidebarMenuItem
         to='/apps/user-management/users'
         icon='/media/icons/duotune/general/gen051.svg'

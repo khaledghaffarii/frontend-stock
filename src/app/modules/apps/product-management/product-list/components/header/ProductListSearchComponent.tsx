@@ -9,11 +9,11 @@ import {
 } from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useQueryResponse, useQueryResponseData} from '../../core/QueryResponseProvider'
-import {createMultipleClients, getClient} from '../../core/_requests'
+import {createMultipleProducts, getProduct} from '../../core/_requests'
 import {useAuth} from '../../../../../auth'
-import {ClientListLoading} from '../loading/ClientListLoading'
+import {ProductListLoading} from '../loading/ProductListLoading'
 
-const ClientListSearchComponent = () => {
+const ProductListSearchComponent = () => {
   const {updateState} = useQueryRequest()
   const {refetch} = useQueryResponse()
   const clients = useQueryResponseData()
@@ -30,7 +30,7 @@ const ClientListSearchComponent = () => {
       try {
         const token = auth?.token
         if (token) {
-          const data = await getClient(query, token)
+          const data = await getProduct(query, token)
           //@ts-ignore
           setData(data?.data)
         }
@@ -62,7 +62,7 @@ const ClientListSearchComponent = () => {
       setIsLoading(true) // Début du chargement
       try {
         const token: any = auth?.token // Récupérez le token d'authentification
-        await createMultipleClients(file, token)
+        await createMultipleProducts(file, token)
         await refetch() // Rafraîchit les données après importation
       } catch (error) {
         console.log('🚀 ~ handleFileChange ~ error:', error)
@@ -75,7 +75,7 @@ const ClientListSearchComponent = () => {
 
   return (
     <div className='d-flex flex-md-row w-75 justify-content-between'>
-      {isLoading && <ClientListLoading />} {/* Affichage de l'indicateur de chargement */}
+      {isLoading && <ProductListLoading />} {/* Affichage de l'indicateur de chargement */}
       <div className='mt-2 mx-5'>
         <button
           disabled={Object.keys(data).length == 0 ? true : false}
@@ -120,4 +120,4 @@ const ClientListSearchComponent = () => {
   )
 }
 
-export {ClientListSearchComponent}
+export {ProductListSearchComponent}

@@ -1,52 +1,57 @@
 import {FC, useEffect, useState} from 'react'
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
-import {isNotEmpty, toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {Client} from '../core/_models'
+import {isNotEmpty, stringifyRequestQuery, toAbsoluteUrl} from '../../../../../../_metronic/helpers'
+import {Product} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
-import {ClientListLoading} from '../components/loading/ClientListLoading'
-import {createClient, updateClient} from '../core/_requests'
+import {ProductListLoading} from '../components/loading/ProductListLoading'
+import {createProduct} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {useAuth} from '../../../../auth'
+import {getCategory} from '../../../category/category-list/core/_requests'
+import {useQueryRequest} from '../core/QueryRequestProvider'
 type Props = {
   isUserLoading: boolean
-  client: Client
+  product: Product
 }
 
-const editClientSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Format d'email incorrect")
+const editProductSchema = Yup.object().shape({
+  quantity: Yup.string()
     .min(3, 'Minimum 3 caractères')
     .max(50, 'Maximum 50 caractères')
-    .required("L'email est requis"),
-  fullname: Yup.string()
+    .required("L'quantity est requis"),
+  name: Yup.string()
     .min(3, 'Minimum 3 caractères')
     .max(25, 'Maximum 25 caractères')
     .required('Le nom est requis'),
-  company: Yup.string()
+  minimalQuantity: Yup.string()
     .min(3, 'Minimum 3 caractères')
     .max(25, 'Maximum 25 caractères')
     .required('Le nom est requis'),
-  phone: Yup.string()
+  priceSale: Yup.string()
     .min(8, 'Minimum 8 caractères')
     .max(8, 'Maximum 8 caractères')
-    .required('Le phone est requis'),
+    .required('Le prix de vente est requis'),
+  categoryId: Yup.string().required({id: 'categorie est requis'}),
 })
 
-const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
+const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
   const {setItemIdForUpdate} = useListView()
   const {refetch} = useQueryResponse()
   const {currentUser, auth} = useAuth()
   const token: any = auth?.token
-  const [userForEdit] = useState<Client>({
-    ...client,
-    fullname: client.fullname,
-    email: client.email,
-    address: client.address,
-    company: client.company,
-    phone: client.phone,
-    status: client.status,
+  const [categoryId, setCategoryId] = useState('')
+  const {state} = useQueryRequest()
+  const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
+  const [CategogyData, setCategogyData] = useState<any>()
+  const [userForEdit] = useState<Product>({
+    ...product,
+    name: product.name,
+    category_id: product.category_id,
+    quantity: product.quantity,
+    minimalQuantity: product.minimalQuantity,
+    priceSale: product.priceSale,
   })
   const [error, setError] = useState<string | null>(null)
   console.log('🚀 ~ error:', error)
@@ -57,16 +62,31 @@ const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
     }
     setItemIdForUpdate(undefined)
   }
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        try {
+          const token: any = auth?.token
+          const data = await getCategory(query, token)
 
+          setCategogyData(data)
+        } catch (error) {
+          console.log('🚀 ~ file: GroupEditModalForm.tsx:43 ~ fetchData ~ error:', error)
+          // Handle error
+        }
+      }
+      fetchData()
+    } catch (error) {}
+  }, [])
   const formik = useFormik({
     initialValues: userForEdit,
-    validationSchema: editClientSchema,
+    validationSchema: editProductSchema,
     onSubmit: async (values, {setSubmitting}) => {
       setSubmitting(true)
       setError(null)
       try {
-        if (client) {
-          await createClient(values, token)
+        if (product) {
+          await createProduct(values, token)
           setTimeout(() => {
             setSubmitting(false)
             cancel(true)
@@ -137,121 +157,134 @@ const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
             <label className='required fw-bold fs-6 mb-2'>Nom Complet</label>
             <input
               placeholder='Nom complet'
-              {...formik.getFieldProps('fullname')}
+              {...formik.getFieldProps('name')}
               type='text'
-              name='fullname'
+              name='name'
               className={clsx(
                 'form-control form-control-solid mb-3 mb-lg-0',
-                {'is-invalid': formik.touched.fullname && formik.errors.fullname},
+                {'is-invalid': formik.touched.name && formik.errors.name},
                 {
-                  'is-valid': formik.touched.fullname && !formik.errors.fullname,
+                  'is-valid': formik.touched.name && !formik.errors.name,
                 }
               )}
               autoComplete='off'
               disabled={formik.isSubmitting || isUserLoading}
             />
-            {formik.touched.fullname && formik.errors.fullname && (
+            {formik.touched.name && formik.errors.name && (
               <div className='fv-plugins-message-container'>
                 <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.fullname}</span>
+                  <span role='alert'>{formik.errors.name}</span>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className='mb-10'>
+            <label className='form-label fs-6 fw-bold'>Categories</label>
+            <select
+              {...formik.getFieldProps('categoryId')}
+              data-allow-clear='true'
+              onChange={(e) => {
+                formik.setFieldValue('categoryId', e.target.value)
+                setCategoryId(e.target.value)
+              }}
+              id='categoryId'
+              name='categoryId'
+              value={categoryId}
+              className={clsx(
+                'form-select form-select-solid fw-bolder',
+                {'is-invalid': formik.touched.category_id && formik.errors.category_id},
+                {
+                  'is-valid': formik.touched.category_id && !formik.errors.category_id,
+                }
+              )}
+            >
+              <option value='' disabled selected>
+                choisi une categorie
+              </option>
+              {CategogyData &&
+                CategogyData.map((category: any) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          {formik.touched.category_id && formik.errors.category_id && (
+            <div className='fv-plugins-message-container'>
+              <div className='fv-help-block'>
+                <span role='alert'>{formik.errors.category_id}</span>
+              </div>
+            </div>
+          )}
+          <div className='fv-row mb-7'>
+            <label className='required fw-bold fs-6 mb-2'>Quantité</label>
+            <input
+              placeholder='Quantité'
+              {...formik.getFieldProps('quantity')}
+              type='number'
+              name='quantity'
+              className={clsx(
+                'form-control form-control-solid mb-3 mb-lg-0',
+                {'is-invalid': formik.touched.quantity && formik.errors.quantity},
+                {
+                  'is-valid': formik.touched.quantity && !formik.errors.quantity,
+                }
+              )}
+              autoComplete='off'
+              disabled={formik.isSubmitting || isUserLoading}
+            />
+            {formik.touched.quantity && formik.errors.quantity && (
+              <div className='fv-plugins-message-container'>
+                <div className='fv-help-block'>
+                  <span role='alert'>{formik.errors.quantity}</span>
                 </div>
               </div>
             )}
           </div>
           <div className='fv-row mb-7'>
-            <label className='required fw-bold fs-6 mb-2'>Email</label>
+            <label className='required fw-bold fs-6 mb-2'>Quantité minimal</label>
             <input
-              placeholder='Email'
-              {...formik.getFieldProps('email')}
+              placeholder='Quantité minimal'
+              {...formik.getFieldProps('minimalQuantity')}
               className={clsx(
                 'form-control form-control-solid mb-3 mb-lg-0',
-                {'is-invalid': formik.touched.email && formik.errors.email},
+                {'is-invalid': formik.touched.minimalQuantity && formik.errors.minimalQuantity},
                 {
-                  'is-valid': formik.touched.email && !formik.errors.email,
+                  'is-valid': formik.touched.minimalQuantity && !formik.errors.minimalQuantity,
                 }
               )}
-              type='email'
-              name='email'
+              type='minimalQuantity'
+              name='minimalQuantity'
               autoComplete='off'
               disabled={formik.isSubmitting || isUserLoading}
             />
-            {formik.touched.email && formik.errors.email && (
+            {formik.touched.minimalQuantity && formik.errors.minimalQuantity && (
               <div className='fv-plugins-message-container'>
-                <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.email}</span>
-                </div>
+                <span role='alert'>{formik.errors.minimalQuantity}</span>
               </div>
             )}
           </div>
           <div className='fv-row mb-7'>
-            <label className='required fw-bold fs-6 mb-2'>Company</label>
+            <label className='required fw-bold fs-6 mb-2'>Prix de vente</label>
             <input
-              placeholder='Company'
-              {...formik.getFieldProps('company')}
-              type='text'
-              name='company'
+              placeholder='Prix de vente'
+              {...formik.getFieldProps('priceSale')}
               className={clsx(
                 'form-control form-control-solid mb-3 mb-lg-0',
-                {'is-invalid': formik.touched.company && formik.errors.company},
+                {'is-invalid': formik.touched.priceSale && formik.errors.priceSale},
                 {
-                  'is-valid': formik.touched.company && !formik.errors.company,
+                  'is-valid': formik.touched.priceSale && !formik.errors.priceSale,
                 }
               )}
+              type='number'
+              name='priceSale'
               autoComplete='off'
               disabled={formik.isSubmitting || isUserLoading}
             />
-            {formik.touched.company && formik.errors.company && (
+            {formik.touched.priceSale && formik.errors.priceSale && (
               <div className='fv-plugins-message-container'>
                 <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.company}</span>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className='fv-row mb-7'>
-            <label className='required fw-bold fs-6 mb-2'>Adresse</label>
-            <input
-              placeholder='Adresse'
-              {...formik.getFieldProps('address')}
-              className={clsx(
-                'form-control form-control-solid mb-3 mb-lg-0',
-                {'is-invalid': formik.touched.address && formik.errors.address},
-                {
-                  'is-valid': formik.touched.address && !formik.errors.address,
-                }
-              )}
-              type='address'
-              name='address'
-              autoComplete='off'
-              disabled={formik.isSubmitting || isUserLoading}
-            />
-            {formik.touched.address && formik.errors.address && (
-              <div className='fv-plugins-message-container'>
-                <span role='alert'>{formik.errors.address}</span>
-              </div>
-            )}
-          </div>
-          <div className='fv-row mb-7'>
-            <label className='required fw-bold fs-6 mb-2'>Téléphone</label>
-            <input
-              placeholder='Téléphone'
-              {...formik.getFieldProps('phone')}
-              className={clsx(
-                'form-control form-control-solid mb-3 mb-lg-0',
-                {'is-invalid': formik.touched.phone && formik.errors.phone},
-                {
-                  'is-valid': formik.touched.phone && !formik.errors.phone,
-                }
-              )}
-              type='phone'
-              name='phone'
-              autoComplete='off'
-              disabled={formik.isSubmitting || isUserLoading}
-            />
-            {formik.touched.phone && formik.errors.phone && (
-              <div className='fv-plugins-message-container'>
-                <div className='fv-help-block'>
-                  <span role='alert'>{formik.errors.phone}</span>
+                  <span role='alert'>{formik.errors.priceSale}</span>
                 </div>
               </div>
             )}
@@ -285,9 +318,9 @@ const ClientEditModalForm: FC<Props> = ({client, isUserLoading}) => {
           </button>
         </div>
       </form>
-      {(formik.isSubmitting || isUserLoading) && <ClientListLoading />}
+      {(formik.isSubmitting || isUserLoading) && <ProductListLoading />}
     </>
   )
 }
 
-export {ClientEditModalForm}
+export {ProductEditModalForm}

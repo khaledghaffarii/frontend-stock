@@ -9,11 +9,11 @@ import {
 } from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useQueryResponse, useQueryResponseData} from '../../core/QueryResponseProvider'
-import {createMultipleClients, getClient} from '../../core/_requests'
+import {createMultipleCategorys, getCategory} from '../../core/_requests'
 import {useAuth} from '../../../../../auth'
-import {ClientListLoading} from '../loading/ClientListLoading'
+import {CategoryListLoading} from '../loading/CategoryListLoading'
 
-const ClientListSearchComponent = () => {
+const CategoryListSearchComponent = () => {
   const {updateState} = useQueryRequest()
   const {refetch} = useQueryResponse()
   const clients = useQueryResponseData()
@@ -30,7 +30,7 @@ const ClientListSearchComponent = () => {
       try {
         const token = auth?.token
         if (token) {
-          const data = await getClient(query, token)
+          const data = await getCategory(query, token)
           //@ts-ignore
           setData(data?.data)
         }
@@ -62,7 +62,7 @@ const ClientListSearchComponent = () => {
       setIsLoading(true) // Début du chargement
       try {
         const token: any = auth?.token // Récupérez le token d'authentification
-        await createMultipleClients(file, token)
+        await createMultipleCategorys(file, token)
         await refetch() // Rafraîchit les données après importation
       } catch (error) {
         console.log('🚀 ~ handleFileChange ~ error:', error)
@@ -75,7 +75,7 @@ const ClientListSearchComponent = () => {
 
   return (
     <div className='d-flex flex-md-row w-75 justify-content-between'>
-      {isLoading && <ClientListLoading />} {/* Affichage de l'indicateur de chargement */}
+      {isLoading && <CategoryListLoading />} {/* Affichage de l'indicateur de chargement */}
       <div className='mt-2 mx-5'>
         <button
           disabled={Object.keys(data).length == 0 ? true : false}
@@ -106,7 +106,7 @@ const ClientListSearchComponent = () => {
           type='text'
           data-kt-user-table-filter='search'
           className='form-control form-control-solid w-750px ps-14'
-          placeholder='Search Client'
+          placeholder='Search Categorie'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -120,4 +120,4 @@ const ClientListSearchComponent = () => {
   )
 }
 
-export {ClientListSearchComponent}
+export {CategoryListSearchComponent}
