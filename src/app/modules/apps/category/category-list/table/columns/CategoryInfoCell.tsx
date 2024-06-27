@@ -21,7 +21,7 @@ const CategoryInfoCell: FC<Props> = ({category}) => {
           onClick={() => {
             navigate(`/apps/category-management/category/view/${category.id}`)
           }}
-          className='text-primary mt-5'
+          className='text-primary mt-3'
           style={{cursor: 'pointer'}}
         >
           {category?.name}

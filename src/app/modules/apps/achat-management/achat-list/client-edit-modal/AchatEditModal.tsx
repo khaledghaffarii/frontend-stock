@@ -20,12 +20,12 @@ const AchatEditModal = () => {
         aria-modal='true'
       >
         {/* begin::Modal dialog */}
-        <div className='modal-dialog modal-dialog-centered mw-650px'>
+        <div className='m-5 mw-1050px'>
           {/* begin::Modal content */}
           <div className='modal-content'>
             <AchatEditModalHeader />
             {/* begin::Modal body */}
-            <div className='modal-body scroll-y mx-5 mx-xl-15 my-7'>
+            <div className='modal-body scroll-y mx-5 mx-xl-15 my-7 w-100'>
               <AchatEditModalFormWrapper />
             </div>
             {/* end::Modal body */}

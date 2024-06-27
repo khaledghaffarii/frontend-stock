@@ -20,7 +20,7 @@ const ClientInfoCell: FC<Props> = ({client}) => {
           onClick={() => {
             navigate(`/apps/client-management/clients/view/${client.id}`)
           }}
-          className='text-primary mt-5'
+          className='text-primary mt-3'
           style={{cursor: 'pointer'}}
         >
           {client.fullname}

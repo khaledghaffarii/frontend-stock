@@ -15,13 +15,13 @@ const AchatInfoCell: FC<Props> = ({achat}) => {
   return (
     <div className='d-flex align-items-center'>
       {/* begin:: Avatar */}
-      <div className='symbol symbol-circle symbol-50px overflow-hidden me-3'></div>
-      <div className='d-flex flex-column'>
+      <div className=''></div>
+      <div className=''>
         <p
           onClick={() => {
             navigate(`/apps/achat-management/achat/view/${achat.id}`)
           }}
-          className='text-primary mt-5'
+          className='text-primary mt-3'
           style={{
             cursor: 'pointer',
             // opacity: '0.5',
@@ -30,7 +30,6 @@ const AchatInfoCell: FC<Props> = ({achat}) => {
         >
           {achat.product?.name}
         </p>
-        <a href='#' className='text-gray-800 text-hover-primary mb-1'></a>
       </div>
     </div>
   )

@@ -20,7 +20,7 @@ const ProductInfoCell: FC<Props> = ({product}) => {
           onClick={() => {
             navigate(`/apps/product-management/product/view/${product.id}`)
           }}
-          className='text-primary mt-5'
+          className='text-primary mt-3'
           style={{
             cursor: 'pointer',
             // opacity: '0.5',

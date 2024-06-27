@@ -19,7 +19,7 @@ const SupplierInfoCell: FC<Props> = ({supplier}) => {
           onClick={() => {
             navigate(`/apps/supplier-management/suppliers/view/${supplier.id}`)
           }}
-          className='text-primary mt-5'
+          className='text-primary mt-3'
           style={{cursor: 'pointer'}}
         >
           {supplier.fullname}
