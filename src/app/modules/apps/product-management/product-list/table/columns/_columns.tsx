@@ -26,7 +26,10 @@ const ProductColumns: ReadonlyArray<Column<Product>> = [
       <ProductCustomHeader tableProps={props} title='Full name' className='min-w-125px' />
     ),
     accessor: 'name',
-    Cell: ({row}) => <ProductInfoCell product={row.original} />,
+    Cell: ({row}) => {
+      console.log('🚀 ~ row:', row)
+      return <ProductInfoCell product={row.original} />
+    },
     //Cell: ({...props}) => <ClientInfoCell Client={props.data} />,
     // Cell: ({...props}) => {
     //   console.log('🚀 ~ props:', props.data[props.row.index])
@@ -81,7 +84,7 @@ const ProductColumns: ReadonlyArray<Column<Product>> = [
   },
   {
     Header: (props) => (
-      <ProductCustomHeader tableProps={props} title='Prix de vente' className='min-w-125px' />
+      <ProductCustomHeader tableProps={props} title='Prix de vente - DT ' className='min-w-125px' />
     ),
     accessor: 'priceSale',
     Cell: ({row}) => (

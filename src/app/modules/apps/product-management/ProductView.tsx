@@ -26,18 +26,23 @@ const ProductView: React.FC<Props> = ({className, product}) => {
   const [hasErrors, setHasErrors] = useState<boolean | undefined>(undefined)
   const navigate = useNavigate()
   const {setItemIdForUpdate} = useListView()
-  const [categoryId, setCategoryId] = useState('')
-  console.log('🚀 ~ categoryId -30:', categoryId)
+  const [categoryId, setCategoryId] = useState<any>('')
+  console.log('🚀 ~ productData?.category?.id:', productData?.category?.id)
+  console.log('🚀 ~ categoryId:', categoryId)
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
   const [CategogyData, setCategogyData] = useState<any>()
-
+  useEffect(() => {
+    formik.setFieldValue('categoryId', categoryId)
+    setCategoryId(productData?.category?.id)
+  }, [productData?.category?.id])
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = auth?.token
         if (token) {
           const data = await getProductById(id, token)
+
           //@ts-ignore
           setProductData(data?.data)
         }
@@ -73,11 +78,8 @@ const ProductView: React.FC<Props> = ({className, product}) => {
       .max(50, 'Maximum 25 caractères')
       .required('Le nom est requis'),
     minimalQuantity: Yup.number().min(1, 'Minimum 1 caractères').required('Le nom est requis'),
-    priceSale: Yup.number()
-      .min(1, 'Minimum 1 caractères')
-
-      .required('Le prix de vente est requis'),
-    categoryId: Yup.string().required({id: 'categorie est requis'}),
+    priceSale: Yup.number().min(1, 'Minimum 1 caractères').required('Le prix de vente est requis'),
+    //categoryId: Yup.string().required({id: 'categorie est requis'}),
   })
 
   const formik = useFormik({
@@ -110,8 +112,8 @@ const ProductView: React.FC<Props> = ({className, product}) => {
       }
     },
   })
-  console.log('🚀 ~ categoryId: 113', formik.values?.category_id?.id)
-  console.log('🚀 ~ formik.values:', formik.values)
+  // console.log('🚀 ~ categoryId: 113', formik.values?.category_id)
+  // console.log('🚀 ~ formik.values:', formik.values)
   if (!productData) {
     return <ProductListLoading />
   }
@@ -175,10 +177,11 @@ const ProductView: React.FC<Props> = ({className, product}) => {
                   //   (form: any) => form.id === category_Id
                   // )
                   // formik.setFieldValue('categoryId', e.target.value)
-                  formik.setFieldValue('categoryId', e.target.value)
+
+                  formik.setFieldValue('category_id', e.target.value)
                   setCategoryId(e.target.value)
-                  console.log('🚀 ~ e.target.value:', e.target.value)
                 }}
+                //onChange={(e) => setCategoryId(e.target.value)}
                 id='categoryId'
                 name='categoryId'
                 value={categoryId}

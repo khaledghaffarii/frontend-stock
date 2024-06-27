@@ -22,29 +22,63 @@ import {TotalCutomer} from '../../modules/widgets/TotalCustomers'
 import {TotalSupplier} from '../../modules/widgets/TotalSupplier'
 import {TotalPurchase} from '../../modules/widgets/TotalPurshase'
 import {TotalProduct} from '../../modules/widgets/TotalProduct'
-
+const styles: {[key: string]: React.CSSProperties} = {
+  body: {
+    marginTop: '20px',
+    background: '#FAFAFA',
+  },
+  orderCard: {
+    color: '#fff',
+  },
+  bgCBlue: {
+    background: 'linear-gradient(45deg,#4099ff,#73b4ff)',
+  },
+  bgCGreen: {
+    background: 'linear-gradient(45deg,#2ed8b6,#59e0c5)',
+  },
+  bgCYellow: {
+    background: 'linear-gradient(45deg,#FFB64D,#ffcb80)',
+  },
+  bgCPink: {
+    background: 'linear-gradient(45deg,#FF5370,#ff869a)',
+  },
+  card: {
+    borderRadius: '5px',
+    boxShadow: '0 1px 2.94px 0.06px rgba(4,26,55,0.16)',
+    border: 'none',
+    marginBottom: '30px',
+    transition: 'all 0.3s ease-in-out',
+  },
+  cardBlock: {
+    padding: '25px',
+  },
+  icon: {
+    fontSize: '26px',
+  },
+  fLeft: {
+    float: 'left',
+  },
+  fRight: {
+    float: 'right',
+  },
+}
 const DashboardPage: FC = () => (
   <>
     {/* begin::Row */}
     <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
       <div className='col-md-6 col-lg-12 col-xl-12 col-xxl-12 mb-md-5 mb-xl-10'>
-        {/* <CardsWidget20
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Active Projects'
-          color='#F1416C'
-          img={toAbsoluteUrl('/media/patterns/vector-1.png')}
-        /> */}
         <div className='row g-5 g-xl-8'>
           <div className='col-xl-3'>
-            {/* <TotalCutomer
+            <TotalCutomer
               className='card-xl-stretch mb-xl-8'
-              svgIcon='/media/icons/duotune/user/customer.svg'
+              svgIcon='/media/icons/duotune/communication/com006.svg'
               color='white'
               iconColor='primary'
               title='500M$'
               description='SAP UI Progress'
-            /> */}
+            />
           </div>
+
           <div className='col-xl-3'>
             <TotalSupplier
               className='card-xl-stretch mb-xl-8'
@@ -78,76 +112,77 @@ const DashboardPage: FC = () => (
             />
           </div>
         </div>
-        {/* <div className='row g-5 g-xl-8'>
-          <div className='col-xl-3'>
-            <TotalCutomer
-              className='card-xl-stretch mb-xl-8'
-              svgIcon='/media/icons/duotune/communication/com006.svg'
-              color='white'
-              iconColor='primary'
-              title='500M$'
-              description='SAP UI Progress'
-            />
-          </div>
-          <div className='col-xl-3'>
-            <TotalSupplier
-              className='card-xl-stretch mb-xl-8'
-              //public\media\icons\duotune\user\supplier.svg
-              svgIcon='/media/icons/duotune/finance/fin006.svg'
-              color='white'
-              iconColor='primary'
-              title='500M$'
-              description='SAP UI Progress'
-            />
-          </div>
-          <div className='col-xl-3'>
-            <TotalCutomer
-              className='card-xl-stretch mb-xl-8'
-              svgIcon='/media/icons/duotune/communication/com006.svg'
-              color='white'
-              iconColor='primary'
-              title='500M$'
-              description='SAP UI Progress'
-            />
-          </div>
-          <div className='col-xl-3'>
-            <TotalSupplier
-              className='card-xl-stretch mb-xl-8'
-              //public\media\icons\duotune\user\supplier.svg
-              svgIcon='/media/icons/duotune/graphs/gra005.svg'
-              color='white'
-              iconColor='primary'
-              title='500M$'
-              description='SAP UI Progress'
-            />
-          </div>
-        </div> */}
+        <div style={styles.body}>
+          <div className='container'>
+            <div className='row'>
+              <div className='col-md-4 col-xl-3'>
+                <div style={{...styles.card, ...styles.bgCBlue}} className='order-card'>
+                  <div style={styles.cardBlock} className='card-block'>
+                    <h6 className='m-b-20'>Orders Received</h6>
+                    <h2 className='text-right'>
+                      <i className='fa fa-cart-plus' style={{...styles.icon, ...styles.fLeft}}></i>
+                      <span>486</span>
+                    </h2>
+                    <p className='m-b-0'>
+                      Completed Orders<span style={styles.fRight}>351</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        {/* <CardsWidget7
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Professionals'
-          icon={false}
-          stats={357}
-          labelColor='dark'
-          textColor='gray-300'
-        /> */}
+              <div className='col-md-4 col-xl-3'>
+                <div style={{...styles.card, ...styles.bgCGreen}} className='order-card'>
+                  <div style={styles.cardBlock} className='card-block'>
+                    <h6 className='m-b-20'>Orders Received</h6>
+                    <h2 className='text-right'>
+                      <i className='fa fa-rocket' style={{...styles.icon, ...styles.fLeft}}></i>
+                      <span>486</span>
+                    </h2>
+                    <p className='m-b-0'>
+                      Completed Orders<span style={styles.fRight}>351</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className='col-md-4 col-xl-3'>
+                <div style={{...styles.card, ...styles.bgCYellow}} className='order-card'>
+                  <div style={styles.cardBlock} className='card-block'>
+                    <h6 className='m-b-20'>Orders Received</h6>
+                    <h2 className='text-right'>
+                      <i className='fa fa-refresh' style={{...styles.icon, ...styles.fLeft}}></i>
+                      <span>486</span>
+                    </h2>
+                    <p className='m-b-0'>
+                      Completed Orders<span style={styles.fRight}>351</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className='col-md-4 col-xl-3'>
+                <div style={{...styles.card, ...styles.bgCPink}} className='order-card'>
+                  <div style={styles.cardBlock} className='card-block'>
+                    <h6 className='m-b-20 text-light mb-3'>Orders Received</h6>
+                    <h2 className='text-end text-light mb-3'>
+                      <i
+                        className='fa fa-credit-card text-light'
+                        style={{...styles.icon, ...styles.fLeft}}
+                      ></i>
+                      <span>486</span>
+                    </h2>
+                    <p className='m-b-0 text-light'>
+                      Completed Orders<span style={styles.fRight}>351</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget17 className='h-md-50 mb-5 mb-xl-10' />
-        <ListsWidget26 className='h-lg-50' />
-      </div> */}
-      {/* end::Col */}
-
-      {/* begin::Col */}
-      {/* <div className='col-xxl-6'>
-        <EngageWidget10 className='h-md-100' />
-      </div> */}
-      {/* end::Col */}
     </div>
-    {/* end::Row */}
 
-    {/* begin::Row */}
     <div className='row gx-5 gx-xl-10'>
       {/* begin::Col */}
       <div className='col-xxl-6 mb-5 mb-xl-10'>

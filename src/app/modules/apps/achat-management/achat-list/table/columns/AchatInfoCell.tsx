@@ -2,14 +2,15 @@
 import clsx from 'clsx'
 import {FC} from 'react'
 import {toAbsoluteUrl} from '../../../../../../../_metronic/helpers'
-import {Product} from '../../core/_models'
+import {Achat} from '../../core/_models'
 import {useNavigate} from 'react-router-dom'
 
 type Props = {
-  product: Product
+  achat: Achat
 }
 
-const ProductInfoCell: FC<Props> = ({product}) => {
+const AchatInfoCell: FC<Props> = ({achat}) => {
+  console.log('🚀 ~ achat:', achat)
   const navigate = useNavigate()
   return (
     <div className='d-flex align-items-center'>
@@ -18,16 +19,16 @@ const ProductInfoCell: FC<Props> = ({product}) => {
       <div className='d-flex flex-column'>
         <p
           onClick={() => {
-            navigate(`/apps/product-management/product/view/${product.id}`)
+            navigate(`/apps/achat-management/achat/view/${achat.id}`)
           }}
           className='text-primary mt-5'
           style={{
             cursor: 'pointer',
             // opacity: '0.5',
-            // background: product.color !== '' ? product.color : '',
+            // background: achat.color !== '' ? achat.color : '',
           }}
         >
-          {product.name}
+          {achat.product?.name}
         </p>
         <a href='#' className='text-gray-800 text-hover-primary mb-1'></a>
       </div>
@@ -35,4 +36,4 @@ const ProductInfoCell: FC<Props> = ({product}) => {
   )
 }
 
-export {ProductInfoCell}
+export {AchatInfoCell}

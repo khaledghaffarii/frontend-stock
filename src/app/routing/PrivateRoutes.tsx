@@ -11,6 +11,7 @@ import ClientPage from '../modules/apps/client-management/ClientPage'
 import SupplierPage from '../modules/apps/supplier-management/SupplierPage'
 import CategoryPage from '../modules/apps/category/CategoryPage'
 import ProductPage from '../modules/apps/product-management/ProductPage'
+import AchatPage from '../modules/apps/achat-management/AchatPage'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -107,6 +108,14 @@ const PrivateRoutes = () => {
           element={
             <SuspensedView>
               <ProductPage />
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='apps/achat-management/*'
+          element={
+            <SuspensedView>
+              <AchatPage />
             </SuspensedView>
           }
         />

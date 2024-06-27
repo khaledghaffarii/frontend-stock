@@ -133,6 +133,20 @@ const SidebarMenuMain = () => {
         />
         <SidebarMenuItem to='apps/product-management/product' title='Produits' hasBullet={true} />
       </SidebarMenuItemWithSub>
+      <SidebarMenuItemWithSub
+        to='/apps/achat-management'
+        title='Gestion des achats'
+        fontIcon='bi-chat-left'
+        icon='/media/icons/duotune/user/purchase.svg'
+      >
+        <SidebarMenuItem
+          to='/apps/achat-management/achat'
+          title='Facture fournisseur
+'
+          icon='/media/icons/duotune/user/invoice.svg'
+        />
+      </SidebarMenuItemWithSub>
+
       {/* <SidebarMenuItem
         to='/apps/user-management/users'
         icon='/media/icons/duotune/general/gen051.svg'

@@ -7,7 +7,8 @@ export type Product = {
     id: any
     name: any
   }
-  categoryId?: string
+  color?: string
+  category?: any
   quantity?: number
   minimalQuantity?: number
   priceSale?: number
