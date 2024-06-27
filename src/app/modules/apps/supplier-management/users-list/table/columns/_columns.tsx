@@ -52,7 +52,7 @@ const supplierColumns: ReadonlyArray<Column<Supplier>> = [
     accessor: 'telephone',
     Cell: ({row}) => (
       <div style={{marginTop: 14}}>
-        <p style={{}}>{formatPhone(row.original.phone)}</p>
+        <p style={{}}>{row.original.phone}</p>
       </div>
     ),
   },

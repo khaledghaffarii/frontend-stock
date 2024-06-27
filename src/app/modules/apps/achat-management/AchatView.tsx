@@ -93,16 +93,16 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
                     </span>
                   </h4>
                   <div className='mb-4'>
-                    <h2 className='mb-1 text-muted'>{achatData.supplier.company}</h2>
+                    <h2 className='mb-1 text-muted'>{achatData?.supplier?.company}</h2>
                   </div>
                   <div className='text-muted'>
-                    <p className='mb-1'>{achatData.supplier.fullname}</p>
-                    <p className='mb-1'>{achatData.supplier.address}</p>
+                    <p className='mb-1'>{achatData?.supplier?.fullname}</p>
+                    <p className='mb-1'>{achatData?.supplier?.address}</p>
                     <p className='mb-1'>
-                      <i className='uil uil-envelope-alt '></i> {achatData.supplier.email}
+                      <i className='uil uil-envelope-alt '></i> {achatData?.supplier?.email}
                     </p>
                     <p>
-                      <i className='uil uil-phone '></i> {achatData.supplier.phone}
+                      <i className='uil uil-phone '></i> {achatData?.supplier?.phone}
                     </p>
                   </div>
                 </div>
