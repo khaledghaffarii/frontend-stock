@@ -4,13 +4,15 @@ export type Achat = {
   id?: ID
   name?: string
   product: any
+  refInvoice: any
   product_id?: {
     id: any
     name: any
-    quantity?: number
+    quantity?: any
     minimalQuantity?: number
     priceSale?: number
     category?: any
+    tva?: any
   }
   supplier_id?: {
     id: any
@@ -21,8 +23,9 @@ export type Achat = {
     status?: string
     phone?: string
   }
-  quantity?: number
-  unitPurchasePrice?: number
+  quantity?: any
+  unitPurchasePrice?: any | undefined
+  tva: number
   totalPurchasePrice?: number
   createdAt?: Date
   updatedAt?: Date

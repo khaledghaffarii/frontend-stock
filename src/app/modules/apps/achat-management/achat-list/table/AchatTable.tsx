@@ -20,9 +20,11 @@ const AchatTable = () => {
     return achats.filter(
       (achat: Achat) =>
         //@ts-ignore
-        achat?.name?.toLowerCase().includes(state.search.toLowerCase()) ||
+        achat?.refInvoice?.toLowerCase().includes(state.search.toLowerCase()) ||
         //@ts-ignore
-        achat?.category.name?.toLowerCase().includes(state?.search?.toLowerCase())
+        achat?.product.name?.toLowerCase().includes(state?.search?.toLowerCase()) ||
+        //@ts-ignore
+        achat?.supplier.fullname?.toLowerCase().includes(state?.search?.toLowerCase())
     )
   }, [achats, state.search])
 

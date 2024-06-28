@@ -10,7 +10,7 @@ type Props = {
 }
 
 const AchatInfoCell: FC<Props> = ({achat}) => {
-  console.log('🚀 ~ achat:', achat)
+  console.log('🚀 ~ achat 177:', achat)
   const navigate = useNavigate()
   return (
     <div className='d-flex align-items-center'>
@@ -28,7 +28,7 @@ const AchatInfoCell: FC<Props> = ({achat}) => {
             // background: achat.color !== '' ? achat.color : '',
           }}
         >
-          {achat.product?.name}
+          {achat.refInvoice}
         </p>
       </div>
     </div>

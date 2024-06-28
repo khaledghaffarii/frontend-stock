@@ -13,33 +13,20 @@ import {getCategory} from '../../../category/category-list/core/_requests'
 import {useQueryRequest} from '../core/QueryRequestProvider'
 import {getSupplier, getSupplierById} from '../../../supplier-management/users-list/core/_requests'
 import {getProduct, getProductById} from '../../../product-management/product-list/core/_requests'
-import {Formik, Form, Field, FieldArray} from 'formik'
-import {Button, Container, Row, Col, Form as BootstrapForm, Table} from 'react-bootstrap'
+// import {Formik, Form, Field, FieldArray} from 'formik'
+import {Button, Container, Row, Col, Form as BootstrapForm, Table, Modal} from 'react-bootstrap'
 //import 'bootstrap/dist/css/bootstrap.min.css'
 import {products, suppliers} from './data'
+import {useNavigate} from 'react-router-dom'
 type Props = {
   isUserLoading: boolean
   achat: Achat
 }
 
 const editAchatSchema = Yup.object().shape({
-  quantity: Yup.string()
-    .min(3, 'Minimum 3 caractères')
-    .max(50, 'Maximum 50 caractères')
-    .required("L'quantity est requis"),
-  name: Yup.string()
-    .min(3, 'Minimum 3 caractères')
-    .max(25, 'Maximum 25 caractères')
-    .required('Le nom est requis'),
-  minimalQuantity: Yup.string()
-    .min(3, 'Minimum 3 caractères')
-    .max(25, 'Maximum 25 caractères')
-    .required('Le nom est requis'),
-  priceSale: Yup.string()
-    .min(8, 'Minimum 8 caractères')
-    .max(8, 'Maximum 8 caractères')
-    .required('Le prix de vente est requis'),
-  categoryId: Yup.string().required({id: 'categorie est requis'}),
+  quantity: Yup.number().required('La quantity est requis').positive().integer(),
+  unitPurchasePrice: Yup.number().required('Le prix est requis').positive(),
+  //tva: Yup.number().required('TVA est requis').positive().integer(),
 })
 
 const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
@@ -53,30 +40,40 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
   const [CategogyData, setCategogyData] = useState<any>()
   const [productData, setProductData] = useState<any>()
   const [supplierData, setSupplierData] = useState<any>()
-
+  const navigate = useNavigate()
   const [productId, setProductId] = useState<any>()
+  console.log('🚀 ~ productId:', productId)
   const [oneProduct, setOneProduct] = useState<any>()
+  console.log('🚀 ~ oneProduct:', oneProduct)
+  const customStyles = {
+    backdrop: {backgroundColor: 'rgba(0, 0, 0, 0.5)'},
+    dialog: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    content: {
+      borderRadius: '10px',
+    },
+  }
   const [oneSupplier, setOneSupplier] = useState<any>()
   const [supplierId, setSupplierId] = useState<any>()
-  const [userForEdit] = useState<Achat>({
+  const [totalHT, setTotalHT] = useState(0)
+  const [totalTTC, setTotalTTC] = useState(0)
+  const [showModal, setShowModal] = useState(false)
+  const [showProductSelect, setShowProductSelect] = useState(false)
+  const [purchaseForEdit] = useState<Achat>({
     ...achat,
+    id: achat?.id,
     product: achat?.product,
     product_id: achat?.product_id,
     supplier_id: achat?.supplier_id,
     quantity: achat?.quantity,
+    tva: achat?.tva ?? 0,
     unitPurchasePrice: achat?.unitPurchasePrice,
     totalPurchasePrice: achat?.totalPurchasePrice,
     createdAt: achat?.createdAt,
   })
-
-  const [selectedSupplier, setSelectedSupplier] = useState<any>(null)
-
-  // const handleSupplierChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const supplierId = parseInt(e.target.value)
-  //   const supplier = suppliers.find((s: any) => s.id === supplierId)
-  //   setSelectedSupplier(supplier || null)
-  // }
-  const [error, setError] = useState<string | null>(null)
 
   const cancel = (withRefresh?: boolean) => {
     if (withRefresh) {
@@ -91,7 +88,9 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
           const token: any = auth?.token
           if (productId) {
             const data = await getProductById(productId && productId, token)
-            setOneProduct(data)
+            console.log('🚀 ~ fetchDataOneProduct ~ data:', data)
+            //@ts-ignore
+            setOneProduct(data?.data)
           }
         } catch (error) {
           console.log('🚀 ~ file: GroupEditModalForm.tsx:43 ~ fetchDataOneProduct ~ error:', error)
@@ -117,7 +116,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
         fetchDataOneProduct()
       }
     } catch (error) {}
-  }, [supplierId, token])
+  }, [supplierId, productId, token])
 
   useEffect(() => {
     try {
@@ -152,645 +151,534 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
     } catch (error) {}
   }, [])
   const formik = useFormik({
-    initialValues: userForEdit,
+    initialValues: purchaseForEdit,
     validationSchema: editAchatSchema,
     onSubmit: async (values, {setSubmitting}) => {
+      console.log('🚀 ~ onSubmit: ~ values FINAL:', values)
       setSubmitting(true)
-      setError(null)
       try {
-        if (achat) {
-          await createAchat(values, token)
-          setTimeout(() => {
-            setSubmitting(false)
-            cancel(true)
-          }, 2000)
-        }
-      } catch (ex: any) {
-        if (ex.response) {
-          if (
-            ex.response.data.error.errorCode == 'DUPLICATE_CLIENT_NAME' ||
-            ex.response.data.error.errorCode == 'DUPLICATE_PHONE' ||
-            ex.response.data.error.errorCode == 'DUPLICATE_EMAIL'
-          ) {
-            setError(ex.response.data.error.message)
-          }
-        } else {
-          setError('An unknown error occurred')
-        }
-      } finally {
+        // values.totalPurchasePrice =
+        //   values.quantity * values.unitPurchasePrice * (1 + values.tva / 100)
+        const createdAchat: any = await createAchat(values, token)
+        console.log('🚀 ~ onSubmit: ~ createdAchat:', createdAchat)
         setSubmitting(false)
+        setItemIdForUpdate(undefined)
+        refetch()
+        navigate(`/apps/achat-management/achat/view/${createdAchat.id}`)
+        return createdAchat
+      } catch (ex) {
+        setSubmitting(false)
+        console.error(ex)
       }
     },
   })
 
   useEffect(() => {
-    if (error) {
-      console.log('🚀 ~ error xxx:', error)
+    const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+    const quantity = parseFloat(formik.values.quantity)
+    const tva = formik.values.tva
+
+    if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
+      const totalHT = unitPrice * quantity
+      const totalTTC = totalHT * (1 + tva / 100)
+
+      setTotalHT(totalHT)
+      setTotalTTC(totalTTC)
     }
-  }, [error])
+  }, [formik.values.unitPurchasePrice, formik.values.quantity, formik.values.tva])
+  const handleAddProductClick = () => {
+    if (!supplierId) {
+      setShowModal(true)
+    } else {
+      setShowProductSelect(true)
+    }
+  }
   return (
-    // <>
-    //   {error && (
-    //     <div className='alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row p-5 mb-10'>
-    //       <span className='svg-icon svg-icon-2hx svg-icon-primary me-4 mb-5 mb-sm-0'>
-    //         <i className='bi bi-exclamation-circle text-danger fs-3'></i>
-    //       </span>
-    //       <div className='d-flex flex-column text-primary pe-0 pe-sm-10'>
-    //         <h5 className='mb-1 '>Erreur lors de l'ajout du Client</h5>
-    //         <span className='fs-7 text-dark'>
-    //           L'ajout du Client a échoué en raison de duplications dans les champs. Veuillez
-    //           vérifier les informations saisies. email, ce nom complet ou numéro de téléphone existe
-    //           déjà .
-    //         </span>
-    //       </div>
-
-    //       <button
-    //         type='button'
-    //         className='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-    //         data-bs-dismiss='alert'
-    //       >
-    //         <span className='svg-icon svg-icon-1 svg-icon-primary'>...</span>
-    //       </button>
-    //     </div>
-    //   )}
-
-    //   <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
-    //     <div
-    //       className='d-flex flex-column scroll-y me-n7 pe-7'
-    //       id='kt_modal_add_user_scroll'
-    //       data-kt-scroll='true'
-    //       data-kt-scroll-activate='{default: false, lg: true}'
-    //       data-kt-scroll-max-height='auto'
-    //       data-kt-scroll-dependencies='#kt_modal_add_user_header'
-    //       data-kt-scroll-wrappers='#kt_modal_add_user_scroll'
-    //       data-kt-scroll-offset='300px'
-    //     >
-    //       <div className='fv-row mb-7'></div>
-
-    //       <div className='mb-10'>
-    //         <label className='form-label fs-6 fw-bold'>Produit</label>
-    //         <select
-    //           {...formik.getFieldProps('product_id')}
-    //           data-allow-clear='true'
-    //           onChange={(e) => {
-    //             // const product_Id = e.target.value
-    //             // const selectedFormCategory = ProductData.find(
-    //             //   (form: any) => form.id === product_Id
-    //             // )
-    //             // formik.setFieldValue('categoryId', e.target.value)
-
-    //             formik.setFieldValue('product_id', e.target.value)
-    //             setCategoryId(e.target.value)
-    //           }}
-    //           //onChange={(e) => setCategoryId(e.target.value)}
-    //           id='product_id'
-    //           name='product_id'
-    //           value={categoryId}
-    //           className={clsx(
-    //             'form-select form-select-solid fw-bolder',
-    //             {'is-invalid': formik.touched.product_id && formik.errors.product_id},
-    //             {
-    //               'is-valid': formik.touched.product_id && !formik.errors.product_id,
-    //             }
-    //           )}
-    //         >
-    //           <option value='' disabled selected>
-    //             choisi un produit
-    //           </option>
-    //           {ProductData &&
-    //             ProductData.map((product: any) => (
-    //               <option key={product.id} value={product.id}>
-    //                 {product.name}
-    //               </option>
-    //             ))}
-    //         </select>
-    //       </div>
-    //       {formik.touched.product_id && formik.errors.product_id && (
-    //         <div className='fv-plugins-message-container'>
-    //           <div className='fv-help-block'>
-    //             <span role='alert'>{formik.errors.product_id}</span>
-    //           </div>
-    //         </div>
-    //       )}
-    //       <div className='mb-10'>
-    //         <label className='form-label fs-6 fw-bold'>Fournisseur</label>
-    //         <select
-    //           {...formik.getFieldProps('product_id')}
-    //           data-allow-clear='true'
-    //           onChange={(e) => {
-    //             // const product_Id = e.target.value
-    //             // const selectedFormCategory = CategogyData.find(
-    //             //   (form: any) => form.id === product_Id
-    //             // )
-    //             // formik.setFieldValue('categoryId', e.target.value)
-
-    //             formik.setFieldValue('supplier_id', e.target.value)
-    //             setCategoryId(e.target.value)
-    //           }}
-    //           //onChange={(e) => setCategoryId(e.target.value)}
-    //           id='supplier_id'
-    //           name='supplier_id'
-    //           value={categoryId}
-    //           className={clsx(
-    //             'form-select form-select-solid fw-bolder',
-    //             {'is-invalid': formik.touched.supplier_id && formik.errors.supplier_id},
-    //             {
-    //               'is-valid': formik.touched.supplier_id && !formik.errors.supplier_id,
-    //             }
-    //           )}
-    //         >
-    //           <option value='' disabled selected>
-    //             choisi un produit
-    //           </option>
-    //           {supplierData &&
-    //             supplierData.map((supplier: any) => (
-    //               <option key={supplier.id} value={supplier.id}>
-    //                 {supplier.name}
-    //               </option>
-    //             ))}
-    //         </select>
-    //       </div>
-    //       {formik.touched.supplier_id && formik.errors.supplier_id && (
-    //         <div className='fv-plugins-message-container'>
-    //           <div className='fv-help-block'>
-    //             <span role='alert'>{formik.errors.supplier_id}</span>
-    //           </div>
-    //         </div>
-    //       )}
-    //       <div className='fv-row mb-7'>
-    //         <label className='required fw-bold fs-6 mb-2'>Quantité</label>
-    //         <input
-    //           placeholder='Quantité'
-    //           {...formik.getFieldProps('quantity')}
-    //           type='number'
-    //           name='quantity'
-    //           className={clsx(
-    //             'form-control form-control-solid mb-3 mb-lg-0',
-    //             {'is-invalid': formik.touched.quantity && formik.errors.quantity},
-    //             {
-    //               'is-valid': formik.touched.quantity && !formik.errors.quantity,
-    //             }
-    //           )}
-    //           autoComplete='off'
-    //           disabled={formik.isSubmitting}
-    //         />
-    //         {formik.touched.quantity && formik.errors.quantity && (
-    //           <div className='fv-plugins-message-container'>
-    //             <div className='fv-help-block'>
-    //               <span role='alert'>{formik.errors.quantity}</span>
-    //             </div>
-    //           </div>
-    //         )}
-    //       </div>
-    //       <div className='fv-row mb-7'>
-    //         <label className='required fw-bold fs-6 mb-2'>Prix unitaire</label>
-    //         <input
-    //           placeholder='Prix unitaire'
-    //           {...formik.getFieldProps('unitPurchasePrice')}
-    //           className={clsx(
-    //             'form-control form-control-solid mb-3 mb-lg-0',
-    //             {
-    //               'is-invalid': formik.touched.unitPurchasePrice && formik.errors.unitPurchasePrice,
-    //             },
-    //             {
-    //               'is-valid': formik.touched.unitPurchasePrice && !formik.errors.unitPurchasePrice,
-    //             }
-    //           )}
-    //           type='unitPurchasePrice'
-    //           name='unitPurchasePrice'
-    //           autoComplete='off'
-    //           disabled={formik.isSubmitting}
-    //         />
-    //         {formik.touched.unitPurchasePrice && formik.errors.unitPurchasePrice && (
-    //           <div className='fv-plugins-message-container'>
-    //             <span role='alert'>{formik.errors.unitPurchasePrice}</span>
-    //           </div>
-    //         )}
-    //       </div>
-    //       <div className='fv-row mb-7'>
-    //         <label className='required fw-bold fs-6 mb-2'>Prix total</label>
-    //         <input
-    //           placeholder='Prix total'
-    //           {...formik.getFieldProps('totalPurchasePrice')}
-    //           className={clsx(
-    //             'form-control form-control-solid mb-3 mb-lg-0',
-    //             {
-    //               'is-invalid':
-    //                 formik.touched.totalPurchasePrice && formik.errors.totalPurchasePrice,
-    //             },
-    //             {
-    //               'is-valid':
-    //                 formik.touched.totalPurchasePrice && !formik.errors.totalPurchasePrice,
-    //             }
-    //           )}
-    //           type='number'
-    //           name='totalPurchasePrice'
-    //           autoComplete='off'
-    //           disabled={formik.isSubmitting}
-    //         />
-    //         {formik.touched.totalPurchasePrice && formik.errors.totalPurchasePrice && (
-    //           <div className='fv-plugins-message-container'>
-    //             <div className='fv-help-block'>
-    //               <span role='alert'>{formik.errors.totalPurchasePrice}</span>
-    //             </div>
-    //           </div>
-    //         )}
-    //       </div>
-    //     </div>
-
-    //     <div className='text-center pt-15'>
-    //       <button
-    //         type='reset'
-    //         onClick={() => cancel()}
-    //         className='btn btn-light me-3'
-    //         data-kt-users-modal-action='cancel'
-    //         disabled={formik.isSubmitting || isUserLoading}
-    //       >
-    //         Annuler
-    //       </button>
-
-    //       <button
-    //         type='submit'
-    //         className='btn btn-primary'
-    //         data-kt-users-modal-action='submit'
-    //         disabled={isUserLoading || formik.isSubmitting || !formik.isValid || !formik.touched}
-    //       >
-    //         <span className='indicator-label'>Soumettre</span>
-    //         {(formik.isSubmitting || isUserLoading) && (
-    //           <span className='indicator-progress'>
-    //             Veuillez patienter...{' '}
-    //             <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-    //           </span>
-    //         )}
-    //       </button>
-    //     </div>
-    //   </form>
-    //   {(formik.isSubmitting || isUserLoading) && <AchatListLoading />}
-    // </>
     <Container>
-      <Formik
-        initialValues={{
-          supplierId: '',
-          items: [
-            {
-              productId: '',
-              name: '',
-              price: 0,
-              qty: 1,
-              discount: 0,
-              total: 0,
-            },
-          ],
-          salesperson: 'Edward Crowley',
-          notes: '',
-        }}
-        onSubmit={(values) => {
-          console.log(values)
-        }}
-      >
-        {({values, setFieldValue}) => {
-          const totalHT = values.items.reduce(
-            (acc, item) => acc + item.price * item.qty * (1 - item.discount / 100),
-            0
-          )
-          const TVA = totalHT * 0.2 // Assuming 20% tax rate
-          const totalTTC = totalHT + TVA
+      <form id='kt_modal_add_user_form' className='form' onSubmit={formik.handleSubmit} noValidate>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            marginBottom: 50,
+          }}
+        >
+          <BootstrapForm.Group>
+            <BootstrapForm.Label>Sélectionner le fournisseur :</BootstrapForm.Label>
+            <div className='mb-10'>
+              <select
+                {...formik.getFieldProps('supplier_id')}
+                data-allow-clear='true'
+                onChange={(e) => {
+                  // const product_Id = e.target.value
+                  // const selectedFormCategory = CategogyData.find(
+                  //   (form: any) => form.id === product_Id
+                  // )
+                  // formik.setFieldValue('categoryId', e.target.value)
 
-          return (
-            <Form>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginBottom: 50,
+                  formik.setFieldValue('supplier_id', e.target.value)
+                  setSupplierId(e.target.value)
                 }}
+                id='supplier_id'
+                name='supplier_id'
+                value={supplierId}
+                className={clsx(
+                  'form-select  fw-bolder',
+                  {'is-invalid': formik.touched.supplier_id && formik.errors.supplier_id},
+                  {
+                    'is-valid': formik.touched.supplier_id && !formik.errors.supplier_id,
+                  }
+                )}
               >
-                {' '}
-                <BootstrapForm.Group>
-                  <BootstrapForm.Label>Sélectionner le fournisseur :</BootstrapForm.Label>
-                  {/* <Field
-                    as='select'
-                    name='supplierId'
-                    className='form-control'
-                    onChange={handleSupplierChange}
-                  >
-                    <option value=''>Tout les fournisseur</option>
-                    {suppliers.map((supplier: any) => (
-                      <option key={supplier.id} value={supplier.id}>
-                        {supplier.name}
-                      </option>
-                    ))}
-                  </Field> */}
-                  <div className='mb-10'>
-                    <select
-                      {...formik.getFieldProps('supplier_id')}
-                      data-allow-clear='true'
-                      onChange={(e) => {
-                        // const product_Id = e.target.value
-                        // const selectedFormCategory = CategogyData.find(
-                        //   (form: any) => form.id === product_Id
-                        // )
-                        // formik.setFieldValue('categoryId', e.target.value)
-
-                        formik.setFieldValue('supplier_id', e.target.value)
-                        setSupplierId(e.target.value)
-                      }}
-                      id='supplier_id'
-                      name='supplier_id'
-                      value={supplierId}
-                      className={clsx(
-                        'form-select  fw-bolder',
-                        {'is-invalid': formik.touched.supplier_id && formik.errors.supplier_id},
-                        {
-                          'is-valid': formik.touched.supplier_id && !formik.errors.supplier_id,
-                        }
-                      )}
-                    >
-                      <option value='' disabled selected>
-                        choisi un fournisseur
-                      </option>
-                      {supplierData &&
-                        supplierData.map((supplier: any) => (
-                          <option key={supplier.id} value={supplier.id}>
-                            {supplier.fullname}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                </BootstrapForm.Group>
-                {oneSupplier && (
-                  <div className='mb-4'>
-                    <h5>Détails du fournisseur</h5>
-                    <hr />
-                    <div className='d-flex flex-column '>
-                      <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
-                        <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
-                          Société :
-                        </BootstrapForm.Label>
-                        <BootstrapForm.Control
-                          type='text'
-                          value={oneSupplier.company}
-                          readOnly
-                          className='flex-grow-1 border-0 fw-light text-start '
-                        />
-                      </BootstrapForm.Group>
-                      <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
-                        <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
-                          Nom et prenom :
-                        </BootstrapForm.Label>
-                        <BootstrapForm.Control
-                          type='text'
-                          value={oneSupplier.fullname}
-                          readOnly
-                          className='flex-grow-1 border-0 fw-light text-start '
-                        />
-                      </BootstrapForm.Group>
-                      <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
-                        <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
-                          Email :
-                        </BootstrapForm.Label>
-                        <BootstrapForm.Control
-                          type='text'
-                          value={oneSupplier.email}
-                          readOnly
-                          className='flex-grow-1 border-0 fw-light text-start '
-                        />
-                      </BootstrapForm.Group>
-                      <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
-                        <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
-                          Téléphonne :
-                        </BootstrapForm.Label>
-                        <BootstrapForm.Control
-                          type='text'
-                          value={oneSupplier.phone}
-                          readOnly
-                          className='flex-grow-1 border-0 fw-light text-start '
-                        />
-                      </BootstrapForm.Group>
-                      <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround   '>
-                        <BootstrapForm.Label className=' me-3 w-100 mt-3'>
-                          Adresse :
-                        </BootstrapForm.Label>
-                        <BootstrapForm.Control
-                          type='text'
-                          value={oneSupplier.address}
-                          readOnly
-                          className='flex-grow-1 border-0 fw-light text-start  '
-                        />
-                      </BootstrapForm.Group>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <FieldArray name='items'>
-                {({remove, push}) => (
-                  <>
-                    {values.items.map((item, index) => (
-                      <div>
-                        <BootstrapForm.Label>Sélectionner le produit :</BootstrapForm.Label>
-                        <div key={index} className='mt-5 mb-5'>
-                          <Row className='align-items-center'>
-                            <Col md={2}>
-                              <BootstrapForm.Group>
-                                <BootstrapForm.Label>Produit :</BootstrapForm.Label>
-                                <div className=''>
-                                  <select
-                                    {...formik.getFieldProps('product_id')}
-                                    data-allow-clear='true'
-                                    onChange={(e) => {
-                                      formik.setFieldValue('product_id', e.target.value)
-                                      setProductId(e.target.value)
-                                    }}
-                                    id='product_id'
-                                    name='product_id'
-                                    value={productId}
-                                    className={clsx(
-                                      'form-select  fw-bolder',
-                                      {
-                                        'is-invalid':
-                                          formik.touched.product_id && formik.errors.product_id,
-                                      },
-                                      {
-                                        'is-valid':
-                                          formik.touched.product_id && !formik.errors.product_id,
-                                      }
-                                    )}
-                                  >
-                                    <option value='' disabled selected>
-                                      Choisi un produit
-                                    </option>
-                                    {productData &&
-                                      productData.map((product: any) => (
-                                        <option key={product.id} value={product.id}>
-                                          {product.name}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </div>
-                              </BootstrapForm.Group>
-                            </Col>
-
-                            <Col md={2}>
-                              <BootstrapForm.Group>
-                                <BootstrapForm.Label>Prix unitaire HT:</BootstrapForm.Label>
-                                <Field
-                                  value={oneProduct.priceSale}
-                                  type='number'
-                                  className='form-control'
-                                  readOnly
-                                />
-                              </BootstrapForm.Group>
-                            </Col>
-
-                            <Col md={1}>
-                              <BootstrapForm.Group>
-                                <BootstrapForm.Label>Quantité :</BootstrapForm.Label>
-                                <Field
-                                  name={`items.${index}.qty`}
-                                  type='number'
-                                  className='form-control'
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const qty = parseInt(e.target.value)
-                                    setFieldValue(`items.${index}.qty`, qty)
-                                    setFieldValue(
-                                      `items.${index}.total`,
-                                      item.price * qty * (1 - item.discount / 100)
-                                    )
-                                  }}
-                                />
-                              </BootstrapForm.Group>
-                            </Col>
-
-                            <Col md={2}>
-                              <BootstrapForm.Group>
-                                <BootstrapForm.Label>TVA :</BootstrapForm.Label>
-                                <Field
-                                  as='select'
-                                  name={`items.${index}.tva`}
-                                  className='form-select'
-                                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                    const tva = parseFloat(e.target.value)
-                                    setFieldValue(`items.${index}.tva`, tva)
-                                    setFieldValue(
-                                      `items.${index}.total`,
-                                      item.price *
-                                        item.qty *
-                                        (1 - item.discount / 100) *
-                                        (1 + tva / 100)
-                                    )
-                                  }}
-                                >
-                                  <option value={0}>0%</option>
-                                  <option value={19}>19%</option>
-                                </Field>
-                              </BootstrapForm.Group>
-                            </Col>
-
-                            <Col md={2}>
-                              <BootstrapForm.Group>
-                                <BootstrapForm.Label>Total :</BootstrapForm.Label>
-                                <Field
-                                  name={`items.${index}.total`}
-                                  type='number'
-                                  className='form-control'
-                                  readOnly
-                                />
-                              </BootstrapForm.Group>
-                            </Col>
-                          </Row>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </FieldArray>
-              <hr />
-
-              <Table className='table table-hover ' hover variant='white'>
-                <thead>
-                  <tr>
-                    <th style={{width: '70px'}} className='fw-bold '>
-                      No.
-                    </th>
-                    <th className='fw-bold '>Désignation</th>
-                    <th className='fw-bold '>Prix unitaire HT</th>
-                    <th className='fw-bold '>Quantité</th>
-                    <th className='fw-bold ' style={{width: '120px'}}>
-                      Prix total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {values.items.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.productId}</td>
-                      <td>{item.name}</td>
-                      <td>{item.price}</td>
-                      <td>{item.qty}</td>
-                      <td>{item.total}</td>
-                    </tr>
+                <option value='' disabled selected>
+                  choisi un fournisseur
+                </option>
+                {supplierData &&
+                  supplierData.map((supplier: any) => (
+                    <option key={supplier.id} value={supplier.id}>
+                      {supplier.fullname}
+                    </option>
                   ))}
-                </tbody>
-              </Table>
-              <div style={{marginTop: 100}} className=' table-responsive text-end'>
-                <table className='table table-striped table-borderless border-0 border-b-2 brc-default-l1 w-25'>
-                  <tbody>
-                    <tr>
-                      <th scope='row' className='fw-bold text-start'>
+              </select>
+            </div>
+          </BootstrapForm.Group>
+          {oneSupplier && (
+            <div className='mb-4'>
+              <h5>Détails du fournisseur</h5>
+              <hr />
+              <div className='d-flex flex-column '>
+                <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                  <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                    Société :
+                  </BootstrapForm.Label>
+                  <BootstrapForm.Control
+                    type='text'
+                    value={oneSupplier.company}
+                    readOnly
+                    className='flex-grow-1 border-0 fw-light text-start '
+                  />
+                </BootstrapForm.Group>
+                <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                  <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                    Nom et prenom :
+                  </BootstrapForm.Label>
+                  <BootstrapForm.Control
+                    type='text'
+                    value={oneSupplier.fullname}
+                    readOnly
+                    className='flex-grow-1 border-0 fw-light text-start '
+                  />
+                </BootstrapForm.Group>
+                <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                  <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                    Email :
+                  </BootstrapForm.Label>
+                  <BootstrapForm.Control
+                    type='text'
+                    value={oneSupplier.email}
+                    readOnly
+                    className='flex-grow-1 border-0 fw-light text-start '
+                  />
+                </BootstrapForm.Group>
+                <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                  <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                    Téléphonne :
+                  </BootstrapForm.Label>
+                  <BootstrapForm.Control
+                    type='text'
+                    value={oneSupplier.phone}
+                    readOnly
+                    className='flex-grow-1 border-0 fw-light text-start '
+                  />
+                </BootstrapForm.Group>
+                <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround   '>
+                  <BootstrapForm.Label className=' me-3 w-100 mt-3'>Adresse :</BootstrapForm.Label>
+                  <BootstrapForm.Control
+                    type='text'
+                    value={oneSupplier.address}
+                    readOnly
+                    className='flex-grow-1 border-0 fw-light text-start  '
+                  />
+                </BootstrapForm.Group>
+              </div>
+            </div>
+          )}
+        </div>
+        {!showProductSelect && (
+          <Row>
+            <Col>
+              <Button variant='success' onClick={handleAddProductClick}>
+                Ajouter un produit
+              </Button>
+            </Col>
+          </Row>
+        )}
+        {showProductSelect && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 50,
+              width: '105%',
+            }}
+          >
+            <BootstrapForm.Group>
+              <BootstrapForm.Label>Sélectionner le produit :</BootstrapForm.Label>
+              <div className='mb-3'>
+                <select
+                  {...formik.getFieldProps('product_id')}
+                  data-allow-clear='true'
+                  onChange={(e) => {
+                    formik.setFieldValue('product_id', e.target.value)
+                    setProductId(e.target.value)
+                  }}
+                  id='product_id'
+                  name='product_id'
+                  value={productId}
+                  className={clsx(
+                    'form-select fw-bolder',
+                    {
+                      'is-invalid': formik.touched.product_id && formik.errors.product_id,
+                    },
+                    {
+                      'is-valid': formik.touched.product_id && !formik.errors.product_id,
+                    }
+                  )}
+                >
+                  <option value='' disabled selected>
+                    Choisissez un produit
+                  </option>
+                  {productData &&
+                    productData.map((product: any) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                </select>
+                {formik.touched.product_id && formik.errors.product_id ? (
+                  <div className='invalid-feedback'>{formik.errors.product_id}</div>
+                ) : null}
+              </div>
+            </BootstrapForm.Group>
+
+            {oneProduct && (
+              <div className='mb-4'>
+                <h5>Détails du Produit</h5>
+                <hr />
+                <div className='d-flex flex-column '>
+                  <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                    <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                      Nom produit :
+                    </BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type='text'
+                      value={oneProduct?.name}
+                      readOnly
+                      className='flex-grow-1 border-0 fw-light text-start '
+                    />
+                  </BootstrapForm.Group>
+
+                  <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround '>
+                    <BootstrapForm.Label className='fw-bold me-3 w-100 mt-3'>
+                      Quantité Actuelle en stock :
+                    </BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type='text'
+                      value={oneProduct?.quantity}
+                      readOnly
+                      className='flex-grow-1 border-0 fw-light text-start '
+                    />
+                  </BootstrapForm.Group>
+
+                  <BootstrapForm.Group className='mb-1 d-flex align-items-center  justify-content-arround   '>
+                    <BootstrapForm.Label className=' me-3 w-100 mt-3'>
+                      Prix de Vente (TND) :
+                    </BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type='text'
+                      value={oneProduct?.priceSale}
+                      readOnly
+                      className='flex-grow-1 border-0 fw-light text-start  '
+                    />
+                  </BootstrapForm.Group>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <>
+          <div>
+            <div className='mt-5 mb-5 '>
+              <Row className='align-items-center'>
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className=' fv-row d-flex flex-column mt-5  fv-row'>
+                      <BootstrapForm.Control
+                        type='text'
+                        value={oneProduct?.name}
+                        readOnly
+                        className='flex-grow-1 fw-bold fw-light text-start border-0 fs-4'
+                      />
+                      <p style={{marginLeft: 13, fontSize: 12, marginTop: -8}}>
+                        {oneProduct?.category.name}
+                      </p>
+
+                      {/* <BootstrapForm.Control
+                        type='text'
+                        value={oneProduct.category.name}
+                        readOnly
+                        className='flex-grow-1  fw-light text-start border-0 '
+                      /> */}
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className='d-flex flex-column mb-7 fv-row'>
+                      <BootstrapForm.Label className='d-flex align-items-center fs-6 fw-bold form-label mt-3'>
+                        Prix unitaire HT
+                      </BootstrapForm.Label>
+                      <input
+                        {...formik.getFieldProps('unitPurchasePrice')}
+                        type='number'
+                        name='unitPurchasePrice'
+                        onChange={(e) => {
+                          formik.handleChange(e)
+                          const unitPrice = parseFloat(e.target.value)
+                          const quantity = parseFloat(formik.values.quantity)
+                          const tva = formik.values.tva
+                          if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
+                            const totalHT = unitPrice * quantity
+                            const totalTTC = totalHT * (1 + tva / 100)
+                            setTotalHT(totalHT)
+                            setTotalTTC(totalTTC)
+                          }
+                        }}
+                        value={formik.values.unitPurchasePrice}
+                        className={clsx(
+                          'form-control form-control-lg form-control-solid',
+                          {
+                            'is-invalid':
+                              formik.touched.unitPurchasePrice && formik.errors.unitPurchasePrice,
+                          },
+                          {
+                            'is-valid':
+                              formik.touched.unitPurchasePrice && !formik.errors.unitPurchasePrice,
+                          }
+                        )}
+                        disabled={!supplierId}
+                      />
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className='d-flex flex-column mb-7 fv-row '>
+                      <BootstrapForm.Label className='d-flex align-items-center fs-6 fw-bold form-label mt-3'>
+                        Quantité
+                      </BootstrapForm.Label>
+                      <input
+                        {...formik.getFieldProps('quantity')}
+                        type='number'
+                        name='quantity'
+                        onChange={(e) => {
+                          formik.handleChange(e)
+                          const quantity = parseFloat(e.target.value)
+                          const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+                          const tva = formik.values.tva
+                          if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
+                            const totalHT = unitPrice * quantity
+                            const totalTTC = totalHT * (1 + tva / 100)
+                            setTotalHT(totalHT)
+                            setTotalTTC(totalTTC)
+                          }
+                        }}
+                        value={formik.values.quantity}
+                        className={clsx(
+                          'form-control form-control-lg form-control-solid fw-bolder ',
+                          {'is-invalid': formik.touched.quantity && formik.errors.quantity},
+                          {
+                            'is-valid': formik.touched.quantity && !formik.errors.quantity,
+                          }
+                        )}
+                        disabled={!supplierId}
+                      />
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className='d-flex flex-column mb-7 fv-row'>
+                      <BootstrapForm.Label className='d-flex align-items-center fs-6 fw-bold form-label mt-3'>
+                        TVA
+                      </BootstrapForm.Label>
+                      <select
+                        {...formik.getFieldProps('tva')}
+                        onChange={(e) => {
+                          formik.handleChange(e)
+                          const tva = parseFloat(e.target.value)
+                          const quantity = parseFloat(formik.values.quantity)
+                          const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+                          if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
+                            const totalHT = unitPrice * quantity
+                            const totalTTC = totalHT * (1 + tva / 100)
+                            setTotalHT(totalHT)
+                            setTotalTTC(totalTTC)
+                          }
+                        }}
+                        name='tva'
+                        value={formik.values.tva}
+                        className={clsx(
+                          'form-select form-select-lg form-select-solid fw-bolder',
+                          {'is-invalid': formik.touched.tva && formik.errors.tva},
+                          {
+                            'is-valid': formik.touched.tva && !formik.errors.tva,
+                          }
+                        )}
+                        disabled={!supplierId}
+                      >
+                        <option value='' disabled>
+                          Sélectionner TVA
+                        </option>
+                        <option value={0}>0%</option>
+                        <option value={19}>19%</option>
+                      </select>
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className='d-flex flex-column mb-7 fv-row'>
+                      <BootstrapForm.Label className='d-flex align-items-center fs-6 fw-bold form-label mt-3'>
                         Total HT
-                      </th>
-                      <td className='text-end'>{totalHT.toFixed(2)} TND</td>
-                    </tr>
-                    <tr>
-                      <th scope='row' className='fw-bold text-start'>
-                        TVA :
-                      </th>
-                      <td className='text-end'>19%</td>
-                    </tr>
-                    <tr>
-                      <th scope='row' className='fw-bold text-start'>
-                        Total TTC :
-                      </th>
-                      <td className='text-end'>{totalTTC.toFixed(2)} TND</td>
-                    </tr>
-                    <tr>
-                      <th scope='row' className='fw-bold text-start'>
-                        Net à payer
-                      </th>
-                      <td className='text-end'>
-                        <h4 className='m-0 fw-semibold'>{totalTTC.toFixed(2)} TND</h4>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              {/* <Table className='mt-5 w-25 text-start'>
-                <tfoot>
-                  <tr>
-                    <td colSpan={5}>HT (Hors Taxe) :</td>
-                    <td>{totalHT.toFixed(2)} €</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={5}>TVA (20%) :</td>
-                    <td>{TVA.toFixed(2)} €</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={5}>TTC (Toutes Taxes Comprises) :</td>
-                    <td>{totalTTC.toFixed(2)} €</td>
-                  </tr>
-                </tfoot>
-              </Table> */}
-              <div className='text-right'>
-                <Button type='submit' variant='success'>
-                  Soumettre
-                </Button>
-              </div>
-            </Form>
-          )
-        }}
-      </Formik>
+                      </BootstrapForm.Label>
+                      <input
+                        type='text'
+                        value={totalHT.toFixed(2)}
+                        readOnly
+                        className='form-control form-control-lg form-control-solid'
+                      />
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+                <Col md={2}>
+                  <BootstrapForm.Group>
+                    <div className='d-flex flex-column mb-7 fv-row'>
+                      <BootstrapForm.Label className='d-flex align-items-center fs-6 fw-bold form-label mt-3'>
+                        Total TTC
+                      </BootstrapForm.Label>
+                      <input
+                        type='text'
+                        value={totalTTC.toFixed(2)}
+                        readOnly
+                        className='form-control form-control-lg form-control-solid'
+                      />
+                    </div>
+                  </BootstrapForm.Group>
+                </Col>
+              </Row>
+            </div>
+          </div>
+        </>
+
+        <hr />
+
+        <Table className='table table-hover ' hover variant='white'>
+          <thead>
+            <tr>
+              <th style={{width: '70px'}} className='fw-bold '>
+                No.
+              </th>
+              <th className='fw-bold '>Désignation</th>
+              <th className='fw-bold '>Prix unitaire HT</th>
+              <th className='fw-bold '>Quantité</th>
+              <th className='fw-bold ' style={{width: '120px'}}>
+                Prix total HT
+              </th>
+              <th className='fw-bold ' style={{width: '120px'}}>
+                Prix total TTC
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>{oneProduct?.name}</td>
+              <td>{formik.values.unitPurchasePrice} TND</td>
+              <td>{formik.values.quantity}</td>
+              <td>{totalHT.toFixed(2)} TND</td>
+              <td>{totalTTC.toFixed(2)} TND</td>
+            </tr>
+          </tbody>
+        </Table>
+        <div style={{marginTop: 100}} className=' table-responsive text-end'>
+          <table className='table table-striped table-borderless border-0 border-b-2 brc-default-l1 w-25'>
+            <tbody>
+              <tr>
+                <th scope='row' className='fw-bold text-start'>
+                  Total HT
+                </th>
+                <td className='text-end'>{totalHT.toFixed(2)} TND</td>
+              </tr>
+
+              <tr>
+                <th scope='row' className='fw-bold text-start'>
+                  TVA :
+                </th>
+                <td className='text-end'>{formik.values.tva}%</td>
+              </tr>
+              <tr>
+                <th scope='row' className='fw-bold text-start'>
+                  Total TTC
+                </th>
+                <td className='text-end'>{totalTTC.toFixed(2)} TND</td>
+              </tr>
+              <tr>
+                <th scope='row' className='fw-bold text-start'>
+                  Net à payer
+                </th>
+                <td className='text-end'>
+                  <h4 className='m-0 fw-semibold'>{totalTTC.toFixed(2)} TND</h4>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className='w-100 mt-4 d-flex justify-content-center m-5 gap-8'>
+          <Button onClick={() => navigate(-1)} variant='secondary'>
+            Annuler
+          </Button>
+          <Button type='submit' variant='success'>
+            Soumettre
+          </Button>
+        </div>
+      </form>
+      <Modal
+        className=' alert  d-flex flex-center flex-column py-10 px-10 px-lg-20 mb-10'
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        style={customStyles.backdrop}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className='bi bi-exclamation-circle-fill text-danger fs-1 m-5'></i>Erreur
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='fs-3'>
+          Veuillez sélectionner un fournisseur avant d'ajouter un produit.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowModal(false)}>
+            Fermer
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }

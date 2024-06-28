@@ -106,7 +106,7 @@ const AchatListSearchComponent = () => {
           type='text'
           data-kt-user-table-filter='search'
           className='form-control form-control-solid w-750px ps-14'
-          placeholder='Search Client'
+          placeholder=' reférence , nom produit ou nom fournisseur'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

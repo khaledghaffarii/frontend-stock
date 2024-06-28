@@ -11,13 +11,13 @@ import AchatView from './AchatView'
 
 const achatsBreadcrumbs: Array<PageLink> = [
   {
-    title: 'Client Management',
+    title: 'Géstion des achats',
     path: '/apps/achat-management/achat',
     isSeparator: false,
     isActive: false,
   },
   {
-    title: 'Client View',
+    title: 'Détail achat ',
     path: '/apps/achat-management/achat/view',
     isSeparator: true,
     isActive: false,
@@ -55,7 +55,7 @@ const AchatPage = () => {
           path='achat'
           element={
             <>
-              <PageTitle breadcrumbs={achatsBreadcrumbs}>Client list</PageTitle>
+              <PageTitle breadcrumbs={achatsBreadcrumbs}>List des achats</PageTitle>
               <AchatListWrapper />
             </>
           }

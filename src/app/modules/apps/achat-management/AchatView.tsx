@@ -16,6 +16,9 @@ import {getCategory} from '../category/category-list/core/_requests'
 import {getSupplier} from '../supplier-management/users-list/core/_requests'
 import {getProduct} from '../product-management/product-list/core/_requests'
 import moment from 'moment'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
+import html2canvas from 'html2canvas'
 
 type Props = {
   className: string
@@ -75,6 +78,18 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
   const handleCancel = () => {
     navigate(-1)
   }
+
+  const handleExportPDF = async () => {
+    const input = document.getElementById('pdf-content')
+    if (input) {
+      const canvas = await html2canvas(input)
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF()
+      //@ts-ignore
+      pdf.addImage(imgData, 'PNG', 0, 0)
+      pdf.save(`Achat_${achatData?.numInvoice}.pdf`)
+    }
+  }
   return (
     <>
       <div className='container'>
@@ -83,8 +98,9 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
             <div className='card'>
               <div className='card-body'>
                 <div className='invoice-title'>
+                  <h4 className='mb-5'>Achat Facturé</h4>
                   <h4 className='float-end' style={{fontSize: '15px'}}>
-                    Achat Facturé #DS0204{' '}
+                    {achatData?.refInvoice}
                     <span
                       className='badge bg-success'
                       style={{fontSize: '12px', marginLeft: '8px'}}
@@ -111,15 +127,21 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
 
                 <div className='row'>
                   <div className='col-sm-6'></div>
-                  <div className='col-sm-6'>
-                    <div className='text-muted text-sm-end'>
-                      <div>
+                  <div className='col-12'>
+                    <div className='text-muted text-sm-start mb-12 mt-8'>
+                      <div className='d-flex w-25 flex-row justify-content-between'>
                         <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Numéro de l'achat :</h5>
-                        <p>#DZ0112</p>
+                        <p className='text-dark'>#{achatData?.numInvoice}</p>
                       </div>
-                      <div style={{marginTop: '16px'}}>
+                      <div
+                        className='d-flex w-25 flex-row justify-content-between'
+                        style={{marginTop: '16px'}}
+                      >
                         <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Date de l'achat :</h5>
-                        <p> {moment(achatData.createdAt).format('DD MMMM YYYY, HH:mm')}</p>
+                        <p className='text-dark'>
+                          {' '}
+                          {moment(achatData.createdAt).format('DD MMMM YYYY, HH:mm')}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -149,14 +171,16 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
                           <td>
                             <div>
                               <p className='' style={{fontSize: '14px', marginBottom: '8px'}}>
-                                {achatData.product.name}
+                                {achatData?.product?.name}
                               </p>
-                              <p className='text-muted mb-0'> {achatData.categoryProduct.name}</p>
+                              <p className='text-muted mb-0'> {achatData?.categoryProduct?.name}</p>
                             </div>
                           </td>
-                          <td>{achatData.unitPurchasePrice} TND</td>
-                          <td>{achatData.quantity}</td>
-                          <td className='text-end'>{achatData.totalPurchasePrice} TND</td>
+                          <td>{achatData?.unitPurchasePrice} TND</td>
+                          <td>{achatData?.quantity}</td>
+                          <td className='text-end'>
+                            {achatData?.totalPurchasePrice?.toFixed(2)} TND
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -194,14 +218,14 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
                       </table>
                     </div>
                   </div>
-                  <div className='d-print-none mt-4'>
-                    <div className='float-end'>
-                      <a href='javascript:window.print()' className='btn btn-success me-1  w-md'>
-                        <i className='fa fa-print'> </i>Imprimer
-                      </a>
-                      {/* <a href='#' className='btn btn-primary '>
-                        Envoyer
-                      </a> */}
+                  <div className='w-100 mt-4 d-flex justify-content-center m-5'>
+                    <div className='d-flex gap-2'>
+                      <button onClick={() => navigate(-1)} className='btn btn-secondary'>
+                        Retour
+                      </button>
+                      <button onClick={() => handleExportPDF()} className='btn btn-success'>
+                        <i className='bi bi-file-pdf'></i> exporter PDF
+                      </button>
                     </div>
                   </div>
                 </div>

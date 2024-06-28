@@ -23,13 +23,29 @@ const AchatColumns: ReadonlyArray<Column<Achat>> = [
   },
   {
     Header: (props) => (
-      <AchatCustomHeader tableProps={props} title='Produit acheter' className='min-w-125px' />
+      <AchatCustomHeader tableProps={props} title='Reference ' className='min-w-125px' />
     ),
-    accessor: 'product_id',
+    // Cell: ({row, data}) => <div>{data.length - row.index}</div>,
+    accessor: 'refInvoice',
     Cell: ({row}) => {
       console.log('🚀 ~ row:', row)
       return <AchatInfoCell achat={row.original} />
     },
+  },
+  {
+    Header: (props) => (
+      <AchatCustomHeader tableProps={props} title='Produit acheter' className='min-w-125px' />
+    ),
+    accessor: 'product_id',
+    // Cell: ({row}) => {
+    //   console.log('🚀 ~ row:', row)
+    //   return <AchatInfoCell achat={row.original} />
+    // },
+    Cell: ({row}) => (
+      <div style={{marginTop: 14}}>
+        <p style={{}}>{row.original.product?.name}</p>
+      </div>
+    ),
     //Cell: ({...props}) => <ClientInfoCell Client={props.data} />,
     // Cell: ({...props}) => {
     //   console.log('🚀 ~ props:', props.data[props.row.index])
@@ -37,7 +53,7 @@ const AchatColumns: ReadonlyArray<Column<Achat>> = [
   },
   {
     Header: (props) => (
-      <AchatCustomHeader tableProps={props} title='created At' className='min-w-125px' />
+      <AchatCustomHeader tableProps={props} title='Date creation' className='min-w-125px' />
     ),
     accessor: 'createdAt',
     Cell: ({row}) => (
@@ -62,7 +78,7 @@ const AchatColumns: ReadonlyArray<Column<Achat>> = [
   },
   {
     Header: (props) => (
-      <AchatCustomHeader tableProps={props} title='quantity' className='min-w-125px' />
+      <AchatCustomHeader tableProps={props} title='Quantité' className='min-w-125px' />
     ),
     accessor: 'quantity',
     Cell: ({row}) => (
@@ -73,23 +89,23 @@ const AchatColumns: ReadonlyArray<Column<Achat>> = [
   },
   {
     Header: (props) => (
-      <AchatCustomHeader tableProps={props} title='Prix unitaire - DT' className='min-w-125px' />
+      <AchatCustomHeader tableProps={props} title='Prix unitaire - TND' className='min-w-125px' />
     ),
     accessor: 'unitPurchasePrice',
     Cell: ({row}) => (
       <div style={{marginTop: 14}}>
-        <p style={{}}>{row.original.unitPurchasePrice}</p>
+        <p style={{}}>{row?.original?.unitPurchasePrice?.toFixed(2)}</p>
       </div>
     ),
   },
   {
     Header: (props) => (
-      <AchatCustomHeader tableProps={props} title='Prix dtotal - DT ' className='min-w-125px' />
+      <AchatCustomHeader tableProps={props} title='Prix dtotal - TND ' className='min-w-125px' />
     ),
     accessor: 'totalPurchasePrice',
     Cell: ({row}) => (
       <div style={{marginTop: 14}}>
-        <p style={{}}>{row.original.totalPurchasePrice}</p>
+        <p style={{}}>{row.original?.totalPurchasePrice?.toFixed(2)}</p>
       </div>
     ),
   },

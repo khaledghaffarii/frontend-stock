@@ -7,7 +7,7 @@ const AchatEditModalHeader = () => {
   return (
     <div className='modal-header'>
       {/* begin::Modal title */}
-      <h2 className='fw-bolder'>Add User</h2>
+      <h2 className='fw-bolder'>Ajout achat facturé</h2>
       {/* end::Modal title */}
 
       {/* begin::Close */}

@@ -129,9 +129,15 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem
           to='/apps/category-management/category'
           title='Catégories'
-          hasBullet={true}
+          hasBullet={false}
+          icon='/media/icons/duotune/user/category.svg'
         />
-        <SidebarMenuItem to='apps/product-management/product' title='Produits' hasBullet={true} />
+        <SidebarMenuItem
+          to='apps/product-management/product'
+          title='Produits'
+          icon='/media/icons/duotune/user/product2.svg'
+          hasBullet={false}
+        />
       </SidebarMenuItemWithSub>
       <SidebarMenuItemWithSub
         to='/apps/achat-management'
