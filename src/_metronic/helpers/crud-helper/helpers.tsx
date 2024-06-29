@@ -62,12 +62,12 @@ function isNotEmpty(obj: unknown) {
   return obj !== undefined && obj !== null && obj !== ''
 }
 export function formatPhone(phoneNumber: any) {
-  phoneNumber = phoneNumber.replace(/[- )(]/g, '')
-  if (!phoneNumber.startsWith('+216 ')) {
+  phoneNumber = phoneNumber?.replace(/[- )(]/g, '')
+  if (!phoneNumber?.startsWith('+216 ')) {
     phoneNumber = '+216 ' + phoneNumber
   }
-  phoneNumber = phoneNumber.replace('+216 ', '+216 ')
-  phoneNumber = phoneNumber.replace(/(\d{2})(\d{3})/, '$1 - $2 - ')
+  phoneNumber = phoneNumber?.replace('+216 ', '+216 ')
+  phoneNumber = phoneNumber?.replace(/(\d{2})(\d{3})/, '$1 - $2 - ')
   return phoneNumber
 }
 //@ts-ignore
@@ -92,10 +92,10 @@ export const ExportModal = ({isOpen, onRequestClose, onExport}) => {
   )
 }
 export const truncateString = (str: any, num: any) => {
-  if (str.length <= num) {
+  if (str?.length <= num) {
     return str
   }
-  return str.substring(0, num) + '...'
+  return str?.substring(0, num) + '...'
 }
 
 export const handleStatus = (status: string) => {

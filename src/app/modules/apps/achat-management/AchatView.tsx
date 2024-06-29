@@ -38,7 +38,7 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
 
-  const totalHT = achatData.totalPurchasePrice
+  const totalHT = achatData?.totalPurchasePrice
   const tva = 0.19 * totalHT
   const totalTTC = totalHT + tva
   const netAPayer = totalTTC
@@ -170,7 +170,15 @@ const AchatView: React.FC<Props> = ({className, achat}) => {
                           <th scope='row'>01</th>
                           <td>
                             <div>
-                              <p className='' style={{fontSize: '14px', marginBottom: '8px'}}>
+                              <p
+                                onClick={() => {
+                                  navigate(
+                                    `/apps/product-management/product/view/${achatData?.product?.id}`
+                                  )
+                                }}
+                                className='text-primary'
+                                style={{fontSize: '14px', marginBottom: '8px', cursor: 'pointer'}}
+                              >
                                 {achatData?.product?.name}
                               </p>
                               <p className='text-muted mb-0'> {achatData?.categoryProduct?.name}</p>
