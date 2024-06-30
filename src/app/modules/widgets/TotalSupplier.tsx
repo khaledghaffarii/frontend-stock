@@ -61,7 +61,7 @@ const TotalSupplier: React.FC<Props> = ({
           />
         </div>
         <div className='d-flex flex-column mt-5'>
-          <div className={`text-dark  fw-bold fs-1  mt-2`}> Fournisseurs</div>
+          <div className={`text-dark  fw-bold fs-3  mt-2`}> Fournisseurs</div>
           <div className={`text-dark  fw-bold fs-1 mb-2 `}>{dataNbeSupplier} </div>
         </div>
       </div>

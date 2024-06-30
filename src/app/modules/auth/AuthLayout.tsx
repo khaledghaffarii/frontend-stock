@@ -39,7 +39,7 @@ const AuthLayout = () => {
       {/* begin::Aside */}
       <div
         className='d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2'
-        style={{backgroundImage: `url(${toAbsoluteUrl('/media/landing.jpg')})`}}
+        style={{backgroundImage: `url(${toAbsoluteUrl('/media/landing2.jpg')})`}}
       >
         {/* begin::Content */}
         <div className='d-flex flex-column flex-center py-15 px-5 px-md-15 w-100'>
@@ -59,12 +59,12 @@ const AuthLayout = () => {
 
           {/* begin::Title */}
           <h1 className='text-white fs-2qx fw-bolder text-center mb-7'>
-            Fast, Efficient and Productive
+            Rapide, efficace et productif
           </h1>
           {/* end::Title */}
 
           {/* begin::Text */}
-          <div className='text-dark fs-base text-center'>
+          {/* <div className='text-dark fs-base text-center'>
             In this kind of post,{' '}
             <a href='#' className='opacity-75-hover text-warning fw-bold me-1'>
               the blogger
@@ -75,7 +75,7 @@ const AuthLayout = () => {
               the interviewee
             </a>
             and their <br /> work following this is a transcript of the interview.
-          </div>
+          </div> */}
           {/* end::Text */}
         </div>
         {/* end::Content */}

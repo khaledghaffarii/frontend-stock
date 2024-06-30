@@ -18,6 +18,7 @@ import {
   EngageWidget10,
   StatisticsWidget5,
 } from '../../../_metronic/partials/widgets'
+import {Container, Row, Col, Card} from 'react-bootstrap'
 import {TotalCutomer} from '../../modules/widgets/TotalCustomers'
 import {TotalSupplier} from '../../modules/widgets/TotalSupplier'
 import {TotalPurchase} from '../../modules/widgets/TotalPurshase'
@@ -64,8 +65,7 @@ const styles: {[key: string]: React.CSSProperties} = {
 }
 const DashboardPage: FC = () => (
   <>
-    {/* begin::Row */}
-    <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
+    {/* <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
       <div className='col-md-6 col-lg-12 col-xl-12 col-xxl-12 mb-md-5 mb-xl-10'>
         <div className='row g-5 g-xl-8'>
           <div className='col-xl-3'>
@@ -112,77 +112,62 @@ const DashboardPage: FC = () => (
             />
           </div>
         </div>
-        <div style={styles.body}>
-          <div className='container'>
-            <div className='row'>
-              <div className='col-md-4 col-xl-3'>
-                <div style={{...styles.card, ...styles.bgCBlue}} className='order-card'>
-                  <div style={styles.cardBlock} className='card-block'>
-                    <h6 className='m-b-20'>Orders Received</h6>
-                    <h2 className='text-right'>
-                      <i className='fa fa-cart-plus' style={{...styles.icon, ...styles.fLeft}}></i>
-                      <span>486</span>
-                    </h2>
-                    <p className='m-b-0'>
-                      Completed Orders<span style={styles.fRight}>351</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className='col-md-4 col-xl-3'>
-                <div style={{...styles.card, ...styles.bgCGreen}} className='order-card'>
-                  <div style={styles.cardBlock} className='card-block'>
-                    <h6 className='m-b-20'>Orders Received</h6>
-                    <h2 className='text-right'>
-                      <i className='fa fa-rocket' style={{...styles.icon, ...styles.fLeft}}></i>
-                      <span>486</span>
-                    </h2>
-                    <p className='m-b-0'>
-                      Completed Orders<span style={styles.fRight}>351</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className='col-md-4 col-xl-3'>
-                <div style={{...styles.card, ...styles.bgCYellow}} className='order-card'>
-                  <div style={styles.cardBlock} className='card-block'>
-                    <h6 className='m-b-20'>Orders Received</h6>
-                    <h2 className='text-right'>
-                      <i className='fa fa-refresh' style={{...styles.icon, ...styles.fLeft}}></i>
-                      <span>486</span>
-                    </h2>
-                    <p className='m-b-0'>
-                      Completed Orders<span style={styles.fRight}>351</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className='col-md-4 col-xl-3'>
-                <div style={{...styles.card, ...styles.bgCPink}} className='order-card'>
-                  <div style={styles.cardBlock} className='card-block'>
-                    <h6 className='m-b-20 text-light mb-3'>Orders Received</h6>
-                    <h2 className='text-end text-light mb-3'>
-                      <i
-                        className='fa fa-credit-card text-light'
-                        style={{...styles.icon, ...styles.fLeft}}
-                      ></i>
-                      <span>486</span>
-                    </h2>
-                    <p className='m-b-0 text-light'>
-                      Completed Orders<span style={styles.fRight}>351</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-
+    </div> */}
+    <Container fluid>
+      <Row className='mb-4'>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Ventes aujourd'hui</Card.Title>
+              <Card.Text>643,600 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Ventes cette semaine</Card.Title>
+              <Card.Text>643,600 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Ventes ce mois-ci</Card.Title>
+              <Card.Text>643,600 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Ventes cette année</Card.Title>
+              <Card.Text>643,600 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Total des factures impayées</Card.Title>
+              <Card.Text>643,600 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className='mb-4'>
+          <Card style={{height: 150, padding: 15}}>
+            <Card.Body>
+              <Card.Title>Total des factures payées</Card.Title>
+              <Card.Text>0,000 TND</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
     <div className='row gx-5 gx-xl-10'>
       {/* begin::Col */}
       <div className='col-xxl-6 mb-5 mb-xl-10'>
