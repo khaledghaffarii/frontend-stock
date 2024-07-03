@@ -12,6 +12,7 @@ import SupplierPage from '../modules/apps/supplier-management/SupplierPage'
 import CategoryPage from '../modules/apps/category/CategoryPage'
 import ProductPage from '../modules/apps/product-management/ProductPage'
 import AchatPage from '../modules/apps/achat-management/AchatPage'
+import SalePage from '../modules/apps/sale-management/SalePage'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -119,7 +120,14 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-
+        <Route
+          path='apps/sale-management/*'
+          element={
+            <SuspensedView>
+              <SalePage />
+            </SuspensedView>
+          }
+        />
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>

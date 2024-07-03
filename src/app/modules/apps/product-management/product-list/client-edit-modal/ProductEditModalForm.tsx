@@ -18,21 +18,15 @@ type Props = {
 
 const editProductSchema = Yup.object().shape({
   quantity: Yup.string()
-    .min(3, 'Minimum 3 caractères')
+
     .max(50, 'Maximum 50 caractères')
     .required("L'quantity est requis"),
   name: Yup.string()
     .min(3, 'Minimum 3 caractères')
     .max(25, 'Maximum 25 caractères')
     .required('Le nom est requis'),
-  minimalQuantity: Yup.string()
-    .min(3, 'Minimum 3 caractères')
-    .max(25, 'Maximum 25 caractères')
-    .required('Le nom est requis'),
-  priceSale: Yup.string()
-    .min(8, 'Minimum 8 caractères')
-    .max(8, 'Maximum 8 caractères')
-    .required('Le prix de vente est requis'),
+  minimalQuantity: Yup.string().max(25, 'Maximum 25 caractères').required('Le nom est requis'),
+  priceSale: Yup.string().max(20, 'Maximum 8 caractères').required('Le prix de vente est requis'),
   categoryId: Yup.string().required({id: 'categorie est requis'}),
 })
 
@@ -45,17 +39,16 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
   const [CategogyData, setCategogyData] = useState<any>()
+
   const [userForEdit] = useState<Product>({
     ...product,
     name: product.name,
-    category_id: product.category_id,
+    category_id: product?.category_id,
     quantity: product.quantity,
     minimalQuantity: product.minimalQuantity,
     priceSale: product.priceSale,
   })
   const [error, setError] = useState<string | null>(null)
-  console.log('🚀 ~ error:', error)
-
   const cancel = (withRefresh?: boolean) => {
     if (withRefresh) {
       refetch()
@@ -63,13 +56,18 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
     setItemIdForUpdate(undefined)
   }
   useEffect(() => {
+    formik.setFieldValue('category_id', categoryId)
+  }, [categoryId])
+
+  useEffect(() => {
     try {
       const fetchData = async () => {
         try {
           const token: any = auth?.token
           const data = await getCategory(query, token)
+          console.log('🚀 ~ fetchData ~ data:', data)
 
-          setCategogyData(data)
+          setCategogyData(data?.data)
         } catch (error) {
           console.log('🚀 ~ file: GroupEditModalForm.tsx:43 ~ fetchData ~ error:', error)
           // Handle error
@@ -82,11 +80,13 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
     initialValues: userForEdit,
     validationSchema: editProductSchema,
     onSubmit: async (values, {setSubmitting}) => {
+      console.log('🚀 ~ onSubmit: ~ values:', values)
       setSubmitting(true)
       setError(null)
       try {
         if (product) {
-          await createProduct(values, token)
+          const data = await createProduct(values, token)
+          console.log('🚀 ~ onSubmit: ~ data:', data)
           setTimeout(() => {
             setSubmitting(false)
             cancel(true)
@@ -94,11 +94,7 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
         }
       } catch (ex: any) {
         if (ex.response) {
-          if (
-            ex.response.data.error.errorCode == 'DUPLICATE_CLIENT_NAME' ||
-            ex.response.data.error.errorCode == 'DUPLICATE_PHONE' ||
-            ex.response.data.error.errorCode == 'DUPLICATE_EMAIL'
-          ) {
+          if (ex.response.data.error.errorCode == 'DUPLICATE_PRODUCT_NAME') {
             setError(ex.response.data.error.message)
           }
         } else {
@@ -123,9 +119,9 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
             <i className='bi bi-exclamation-circle text-danger fs-3'></i>
           </span>
           <div className='d-flex flex-column text-primary pe-0 pe-sm-10'>
-            <h5 className='mb-1 '>Erreur lors de l'ajout du Client</h5>
+            <h5 className='mb-1 '>Erreur lors de l'ajout du Product</h5>
             <span className='fs-7 text-dark'>
-              L'ajout du Client a échoué en raison de duplications dans les champs. Veuillez
+              L'ajout du Product a échoué en raison de duplications dans les champs. Veuillez
               vérifier les informations saisies. email, ce nom complet ou numéro de téléphone existe
               déjà .
             </span>
@@ -184,6 +180,7 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
               {...formik.getFieldProps('categoryId')}
               data-allow-clear='true'
               onChange={(e) => {
+                formik.setFieldValue('category_id', e.target.value)
                 formik.setFieldValue('categoryId', e.target.value)
                 setCategoryId(e.target.value)
               }}
@@ -253,7 +250,7 @@ const ProductEditModalForm: FC<Props> = ({product, isUserLoading}) => {
                   'is-valid': formik.touched.minimalQuantity && !formik.errors.minimalQuantity,
                 }
               )}
-              type='minimalQuantity'
+              type='number'
               name='minimalQuantity'
               autoComplete='off'
               disabled={formik.isSubmitting || isUserLoading}

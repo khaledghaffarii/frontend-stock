@@ -5,6 +5,7 @@ const QUERIES = {
   CATEGORY_LIST: 'category-list',
   PRODUCT_LIST: 'product-list',
   ACHAT_LIST: 'achat-list',
+  SALE_LIST: 'sale-list',
 }
 
 export {QUERIES}

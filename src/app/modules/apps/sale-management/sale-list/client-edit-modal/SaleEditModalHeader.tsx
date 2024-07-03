@@ -1,13 +1,13 @@
 import {KTSVG} from '../../../../../../_metronic/helpers'
 import {useListView} from '../core/ListViewProvider'
 
-const ProductEditModalHeader = () => {
+const SaleEditModalHeader = () => {
   const {setItemIdForUpdate} = useListView()
 
   return (
     <div className='modal-header'>
       {/* begin::Modal title */}
-      <h2 className='fw-bolder'>Ajout produit</h2>
+      <h2 className='fw-bolder'>Ajout achat facturé</h2>
       {/* end::Modal title */}
 
       {/* begin::Close */}
@@ -24,4 +24,4 @@ const ProductEditModalHeader = () => {
   )
 }
 
-export {ProductEditModalHeader}
+export {SaleEditModalHeader}

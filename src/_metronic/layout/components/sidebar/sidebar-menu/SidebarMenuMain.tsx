@@ -152,7 +152,18 @@ const SidebarMenuMain = () => {
           icon='/media/icons/duotune/user/invoice.svg'
         />
       </SidebarMenuItemWithSub>
-
+      <SidebarMenuItemWithSub
+        to='/apps/achat-management'
+        title='Gestion des ventes'
+        fontIcon='bi-chat-left'
+        icon='/media/icons/duotune/user/sale.svg'
+      >
+        <SidebarMenuItem
+          to='/apps/sale-management/sale'
+          title='Facture client'
+          icon='/media/icons/duotune/user/invoice.svg'
+        />
+      </SidebarMenuItemWithSub>
       {/* <SidebarMenuItem
         to='/apps/user-management/users'
         icon='/media/icons/duotune/general/gen051.svg'

@@ -1,7 +1,7 @@
 import {KTSVG} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 
-const AchatListToolbar = () => {
+const SaleListToolbar = () => {
   const {setItemIdForUpdate} = useListView()
   const openAddUserModal = () => {
     setItemIdForUpdate(null)
@@ -9,12 +9,12 @@ const AchatListToolbar = () => {
 
   return (
     <div className='d-flex justify-content-end' data-kt-user-table-toolbar='base'>
-      <button type='button' className='btn btn-success' onClick={openAddUserModal}>
+      <button type='button' className='btn btn-primary' onClick={openAddUserModal}>
         <KTSVG path='/media/icons/duotune/arrows/arr075.svg' className='svg-icon-2' />
-        Achat
+        Ajouter produit
       </button>
     </div>
   )
 }
 
-export {AchatListToolbar}
+export {SaleListToolbar}

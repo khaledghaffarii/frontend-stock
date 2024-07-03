@@ -2,34 +2,36 @@ import {FC, useEffect, useState} from 'react'
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
 import {isNotEmpty, stringifyRequestQuery, toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {Achat} from '../core/_models'
+import {Sale} from '../core/_models'
 import clsx from 'clsx'
 import {useListView} from '../core/ListViewProvider'
-import {AchatListLoading} from '../components/loading/AchatListLoading'
-import {createAchat} from '../core/_requests'
+import {SaleListLoading} from '../components/loading/SaleListLoading'
+import {createSale} from '../core/_requests'
 import {useQueryResponse} from '../core/QueryResponseProvider'
 import {useAuth} from '../../../../auth'
 import {getCategory} from '../../../category/category-list/core/_requests'
 import {useQueryRequest} from '../core/QueryRequestProvider'
-import {getSupplier, getSupplierById} from '../../../supplier-management/users-list/core/_requests'
+import {getSupplier} from '../../../supplier-management/users-list/core/_requests'
 import {getProduct, getProductById} from '../../../product-management/product-list/core/_requests'
 // import {Formik, Form, Field, FieldArray} from 'formik'
 import {Button, Container, Row, Col, Form as BootstrapForm, Table, Modal} from 'react-bootstrap'
 //import 'bootstrap/dist/css/bootstrap.min.css'
 import {products, suppliers} from './data'
 import {useNavigate} from 'react-router-dom'
+import {getClient, getClientById} from '../../../client-management/users-list/core/_requests'
 type Props = {
   isUserLoading: boolean
-  achat: Achat
+  sale: Sale
 }
 
-const editAchatSchema = Yup.object().shape({
+const editSaleSchema = Yup.object().shape({
   quantity: Yup.number().required('La quantity est requis').positive().integer(),
-  unitPurchasePrice: Yup.number().required('Le prix est requis').positive(),
+  // unitPurchasePrice: Yup.number().required('Le prix est requis').positive(),
   //tva: Yup.number().required('TVA est requis').positive().integer(),
+  saleDate: Yup.date().required('La date de vente est requise').nullable(),
 })
 
-const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
+const SaleEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
   const {setItemIdForUpdate} = useListView()
   const {refetch} = useQueryResponse()
   const {currentUser, auth} = useAuth()
@@ -39,12 +41,10 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
   const [CategogyData, setCategogyData] = useState<any>()
   const [productData, setProductData] = useState<any>()
-  const [supplierData, setSupplierData] = useState<any>()
+  const [clientData, setClientData] = useState<any>()
   const navigate = useNavigate()
   const [productId, setProductId] = useState<any>()
-  console.log('🚀 ~ productId:', productId)
   const [oneProduct, setOneProduct] = useState<any>()
-  console.log('🚀 ~ oneProduct:', oneProduct)
   const customStyles = {
     backdrop: {backgroundColor: 'rgba(0, 0, 0, 0.5)'},
     dialog: {
@@ -56,32 +56,39 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
       borderRadius: '10px',
     },
   }
-  const [oneSupplier, setOneSupplier] = useState<any>()
-  const [supplierId, setSupplierId] = useState<any>()
+  const [oneClient, setOneClient] = useState<any>()
+  const [clientId, setClientId] = useState<any>()
+  const [statusId, setStatusId] = useState<any>()
+  console.log('🚀 ~ statusId:', statusId)
   const [totalHT, setTotalHT] = useState(0)
   const [totalTTC, setTotalTTC] = useState(0)
   const [totalTTCwt, setTotalTTCwt] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [showProductSelect, setShowProductSelect] = useState(false)
-  const [purchaseForEdit] = useState<Achat>({
-    ...achat,
-    id: achat?.id,
-    product: achat?.product,
-    product_id: achat?.product_id,
-    supplier_id: achat?.supplier_id,
-    quantity: achat?.quantity,
-    tva: achat?.tva ?? 0,
-    unitPurchasePrice: achat?.unitPurchasePrice,
-    totalPurchasePrice: achat?.totalPurchasePrice,
-    createdAt: achat?.createdAt,
+  const [saleForEdit] = useState<Sale>({
+    ...sale,
+    id: sale?.id,
+    product_id: sale?.product_id,
+    client_id: sale?.client_id,
+    quantity: sale?.quantity,
+    tva: sale?.tva ?? 0,
+    status: sale?.status,
+    saleDate: sale?.saleDate,
+    createdAt: sale?.createdAt,
   })
+  const statusOptions = [
+    {value: 0, label: 'Facture'},
+    {value: 1, label: 'Bon de livraison'},
+    {value: 2, label: 'Bon de commande'},
+    {value: 3, label: 'Devis'},
+  ]
+  // const cancel = (withRefresh?: boolean) => {
+  //   if (withRefresh) {
+  //     refetch()
+  //   }
+  //   setItemIdForUpdate(undefined)
+  // }
 
-  const cancel = (withRefresh?: boolean) => {
-    if (withRefresh) {
-      refetch()
-    }
-    setItemIdForUpdate(undefined)
-  }
   useEffect(() => {
     try {
       const fetchDataOneProduct = async () => {
@@ -89,7 +96,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
           const token: any = auth?.token
           if (productId) {
             const data = await getProductById(productId && productId, token)
-            console.log('🚀 ~ fetchDataOneProduct ~ data:', data)
+
             //@ts-ignore
             setOneProduct(data?.data)
           }
@@ -98,26 +105,26 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
         }
       }
 
-      const fetchDataOneSupplier = async () => {
+      const fetchDataOneClient = async () => {
         try {
           const token: any = auth?.token
-          if (supplierId) {
-            const data = await getSupplierById(supplierId && supplierId, token)
+          if (clientId) {
+            const data = await getClientById(clientId && clientId, token)
             //@ts-ignore
-            setOneSupplier(data?.data)
+            setOneClient(data?.data)
           }
         } catch (error) {
           console.log('🚀 ~ file: GroupEditModalForm.tsx:43 ~ fetchDataOneProduct ~ error:', error)
         }
       }
-      if (supplierId) {
-        fetchDataOneSupplier()
+      if (clientId) {
+        fetchDataOneClient()
       }
       if (productId) {
         fetchDataOneProduct()
       }
     } catch (error) {}
-  }, [supplierId, productId, token])
+  }, [clientId, productId, token])
 
   useEffect(() => {
     try {
@@ -139,10 +146,9 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
       const fetchData = async () => {
         try {
           const token: any = auth?.token
-          const data = await getSupplier(query, token)
-          console.log('🚀 ~ fetchData supplier~ data:', data)
+          const data = await getClient(query, token)
 
-          setSupplierData(data?.data)
+          setClientData(data?.data)
         } catch (error) {
           console.log('🚀 ~ file: GroupEditModalForm.tsx:43 ~ fetchData ~ error:', error)
           // Handle error
@@ -152,30 +158,31 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
     } catch (error) {}
   }, [])
   const formik = useFormik({
-    initialValues: purchaseForEdit,
-    validationSchema: editAchatSchema,
+    initialValues: saleForEdit,
+    validationSchema: editSaleSchema,
     onSubmit: async (values, {setSubmitting}) => {
       console.log('🚀 ~ onSubmit: ~ values FINAL:', values)
       setSubmitting(true)
       try {
         // values.totalPurchasePrice =
         //   values.quantity * values.unitPurchasePrice * (1 + values.tva / 100)
-        const createdAchat: any = await createAchat(values, token)
-        console.log('🚀 ~ onSubmit: ~ createdAchat:', createdAchat)
+
+        const createdSale: any = await createSale(values, token)
+        console.log('🚀 ~ onSubmit: ~ createdSale:', createdSale)
         setSubmitting(false)
         setItemIdForUpdate(undefined)
         refetch()
-        navigate(`/apps/achat-management/achat/view/${createdAchat.id}`)
-        return createdAchat
-      } catch (ex) {
+        navigate(`/apps/sale-management/sale/view/${createdSale.id}`)
+        return createdSale
+      } catch (ex: any) {
+        console.log('🚀 ~ onSubmit: ~ ex:', ex.response)
         setSubmitting(false)
-        console.error(ex)
       }
     },
   })
 
   useEffect(() => {
-    const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+    const unitPrice = parseFloat(oneProduct?.priceSale)
     const quantity = parseFloat(formik.values.quantity)
     const tva = formik.values.tva
 
@@ -187,9 +194,9 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
       setTotalTTC(totalTTC)
       setTotalTTCwt(totalTTC - 1)
     }
-  }, [formik.values.unitPurchasePrice, formik.values.quantity, formik.values.tva])
+  }, [oneProduct?.priceSale, formik.values.quantity, formik.values.tva])
   const handleAddProductClick = () => {
-    if (!supplierId) {
+    if (!clientId) {
       setShowModal(true)
     } else {
       setShowProductSelect(true)
@@ -201,17 +208,67 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
         <div
           style={{
             display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+          className=''
+        >
+          <div>
+            <BootstrapForm.Label>Date de vente :</BootstrapForm.Label>{' '}
+            <div className='input-group date w-100 mb-12 ' data-provide='datepicker'>
+              <input
+                type='datetime-local'
+                //name='saleDate'
+                className='form-control '
+                {...formik.getFieldProps('saleDate')}
+                // Add additional attributes or event handlers as needed
+              />
+            </div>
+          </div>
+
+          <BootstrapForm.Group>
+            <BootstrapForm.Label>Sélectionner le statut :</BootstrapForm.Label>
+            <select
+              {...formik.getFieldProps('status')}
+              className={clsx(
+                'form-select  fw-bolder ',
+                {'is-invalid': formik.touched.status && formik.errors.status},
+                {'is-valid': formik.touched.status && !formik.errors.status}
+              )}
+              onChange={(e) => {
+                formik.setFieldValue('status', parseInt(e.target.value))
+                setStatusId(parseInt(e.target.value))
+              }}
+              value={parseInt(statusId)}
+              id='status'
+              name='status'
+            >
+              <option value='' disabled>
+                Choisir un statut
+              </option>
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </BootstrapForm.Group>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-
+            width: '100%',
             marginBottom: 50,
           }}
         >
           <BootstrapForm.Group>
-            <BootstrapForm.Label>Sélectionner le fournisseur :</BootstrapForm.Label>
-            <div className='mb-10 w-25'>
+            <BootstrapForm.Label>Sélectionner le client :</BootstrapForm.Label>
+            <div className='mb-10'>
               <select
-                {...formik.getFieldProps('supplier_id')}
+                {...formik.getFieldProps('client_id')}
                 data-allow-clear='true'
                 onChange={(e) => {
                   // const product_Id = e.target.value
@@ -220,36 +277,35 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                   // )
                   // formik.setFieldValue('categoryId', e.target.value)
 
-                  formik.setFieldValue('supplier_id', e.target.value)
-                  setSupplierId(e.target.value)
+                  formik.setFieldValue('client_id', e.target.value)
+                  setClientId(e.target.value)
                 }}
-                id='supplier_id'
-                name='supplier_id'
-                value={supplierId}
+                id='client_id'
+                name='client_id'
+                value={clientId}
                 className={clsx(
-                  'form-select  fw-bolder',
-                  {'is-invalid': formik.touched.supplier_id && formik.errors.supplier_id},
+                  'form-select  fw-bolder w-25',
+                  {'is-invalid': formik.touched.client_id && formik.errors.client_id},
                   {
-                    'is-valid': formik.touched.supplier_id && !formik.errors.supplier_id,
+                    'is-valid': formik.touched.client_id && !formik.errors.client_id,
                   }
                 )}
               >
                 <option value='' disabled selected>
-                  choisi un fournisseur
+                  choisi un client
                 </option>
-                {supplierData &&
-                  supplierData.map((supplier: any) => (
-                    <option key={supplier.id} value={supplier.id}>
-                      {supplier.fullname}
+                {clientData &&
+                  clientData.map((client: any) => (
+                    <option key={client.id} value={client.id}>
+                      {client.fullname}
                     </option>
                   ))}
               </select>
             </div>
           </BootstrapForm.Group>
-          <hr />
-          {oneSupplier && (
+          {oneClient && (
             <div className='mb-4'>
-              <h5>Détails du fournisseur</h5>
+              <h5>Détails du client</h5>
 
               <div className='table-responsive'>
                 <table className='table table-bordered'>
@@ -264,11 +320,11 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{oneSupplier.fullname}</td>
-                      <td>{oneSupplier.company}</td>
-                      <td>{oneSupplier.email}</td>
-                      <td>{oneSupplier.phone}</td>
-                      <td>{oneSupplier.address}</td>
+                      <td>{oneClient.fullname}</td>
+                      <td>{oneClient.company}</td>
+                      <td>{oneClient.email}</td>
+                      <td>{oneClient.phone}</td>
+                      <td>{oneClient.address}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -292,11 +348,11 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
               flexDirection: 'column',
               justifyContent: 'space-between',
               marginBottom: 50,
+              width: '100%',
             }}
           >
             <BootstrapForm.Group>
               <BootstrapForm.Label>Sélectionner le produit :</BootstrapForm.Label>
-
               <div className='mb-3 w-25'>
                 <select
                   {...formik.getFieldProps('product_id')}
@@ -333,7 +389,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                 ) : null}
               </div>
             </BootstrapForm.Group>
-            <hr />
+
             {oneProduct && (
               <div className='mb-4'>
                 <h5>Détails du Produit</h5>
@@ -394,35 +450,23 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                         Prix unitaire HT
                       </BootstrapForm.Label>
                       <input
-                        {...formik.getFieldProps('unitPurchasePrice')}
                         type='number'
-                        name='unitPurchasePrice'
-                        onChange={(e) => {
-                          formik.handleChange(e)
-                          const unitPrice = parseFloat(e.target.value)
-                          const quantity = parseFloat(formik.values.quantity)
-                          const tva = formik.values.tva
-                          if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
-                            const totalHT = unitPrice * quantity
-                            const totalTTC = totalHT * (1 + tva / 100)
-                            setTotalHT(totalHT)
-                            setTotalTTC(totalTTC)
-                            setTotalTTCwt(totalTTC - 1)
-                          }
-                        }}
-                        value={formik.values.unitPurchasePrice}
-                        className={clsx(
-                          'form-control form-control-lg form-control-solid',
-                          {
-                            'is-invalid':
-                              formik.touched.unitPurchasePrice && formik.errors.unitPurchasePrice,
-                          },
-                          {
-                            'is-valid':
-                              formik.touched.unitPurchasePrice && !formik.errors.unitPurchasePrice,
-                          }
-                        )}
-                        disabled={!supplierId}
+                        // onChange={(e) => {
+                        //   formik.handleChange(e)
+                        //   const unitPrice = parseFloat(e.target.value)
+                        //   const quantity = parseFloat(formik.values.quantity)
+                        //   const tva = formik.values.tva
+                        //   if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
+                        //     const totalHT = unitPrice * quantity
+                        //     const totalTTC = totalHT * (1 + tva / 100)
+                        //     setTotalHT(totalHT)
+                        //     setTotalTTC(totalTTC)
+                        //     setTotalTTCwt(totalTTC - 1)
+                        //   }
+                        // }}
+                        value={oneProduct?.priceSale?.toFixed(3)}
+                        className={clsx('form-control form-control-lg form-control-solid')}
+                        disabled={!clientId}
                       />
                     </div>
                   </BootstrapForm.Group>
@@ -441,7 +485,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                         onChange={(e) => {
                           formik.handleChange(e)
                           const quantity = parseFloat(e.target.value)
-                          const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+                          const unitPrice = parseFloat(oneProduct.priceSale)
                           const tva = formik.values.tva
                           if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
                             const totalHT = unitPrice * quantity
@@ -459,7 +503,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                             'is-valid': formik.touched.quantity && !formik.errors.quantity,
                           }
                         )}
-                        disabled={!supplierId}
+                        disabled={!clientId}
                       />
                     </div>
                   </BootstrapForm.Group>
@@ -476,7 +520,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                           formik.handleChange(e)
                           const tva = parseFloat(e.target.value)
                           const quantity = parseFloat(formik.values.quantity)
-                          const unitPrice = parseFloat(formik.values.unitPurchasePrice)
+                          const unitPrice = parseFloat(oneProduct.priceSale)
                           if (!isNaN(unitPrice) && !isNaN(quantity) && !isNaN(tva)) {
                             const totalHT = unitPrice * quantity
                             const totalTTC = totalHT * (1 + tva / 100)
@@ -494,7 +538,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                             'is-valid': formik.touched.tva && !formik.errors.tva,
                           }
                         )}
-                        disabled={!supplierId}
+                        disabled={!clientId}
                       >
                         <option value='' disabled>
                           Sélectionner TVA
@@ -540,9 +584,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
             </div>
           </div>
         </>
-
         <hr />
-
         <Table className='table table-hover ' hover variant='white'>
           <thead>
             <tr>
@@ -550,7 +592,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
                 No.
               </th>
               <th className='fw-bold '>Désignation</th>
-              <th className='fw-bold '>Prix unitaire HT</th>
+              <th className='fw-bold '>Prix vente unitaire HT</th>
               <th className='fw-bold '>Quantité</th>
               <th className='fw-bold ' style={{width: '120px'}}>
                 Prix total HT
@@ -564,7 +606,7 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
             <tr>
               <td>1</td>
               <td>{oneProduct?.name}</td>
-              <td>{formik.values.unitPurchasePrice} TND</td>
+              <td>{oneProduct?.priceSale?.toFixed(3)} TND</td>
               <td>{formik.values.quantity}</td>
               <td>{totalHT.toFixed(3)} TND</td>
               <td>{totalTTCwt.toFixed(3)} TND</td>
@@ -613,9 +655,9 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
           </table>
         </div>
         <div className='w-100 mt-4 d-flex justify-content-center m-5 gap-8'>
-          <button type='button' className='btn btn-secondary' data-bs-dismiss='modal'>
+          <Button onClick={() => navigate(-1)} variant='secondary'>
             Annuler
-          </button>
+          </Button>
           <Button type='submit' variant='success'>
             Soumettre
           </Button>
@@ -645,4 +687,4 @@ const AchatEditModalForm: FC<Props> = ({achat, isUserLoading}) => {
   )
 }
 
-export {AchatEditModalForm}
+export {SaleEditModalForm}
