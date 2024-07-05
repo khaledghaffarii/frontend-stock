@@ -126,17 +126,17 @@ const SaleColumnsFacture: ReadonlyArray<Column<Achat>> = [
       </div>
     ),
   },
-  {
-    Header: (props) => (
-      <SaleCustomHeader tableProps={props} title='Status' className='min-w-125px' />
-    ),
-    accessor: 'status',
-    Cell: ({row}) => (
-      <div style={{marginTop: 14}}>
-        <p style={{}}>{row.original?.status}</p>
-      </div>
-    ),
-  },
+  // {
+  //   Header: (props) => (
+  //     <SaleCustomHeader tableProps={props} title='Status' className='min-w-125px' />
+  //   ),
+  //   accessor: 'status',
+  //   Cell: ({row}) => (
+  //     <div style={{marginTop: 14}}>
+  //       <p style={{}}>{row.original?.status}</p>
+  //     </div>
+  //   ),
+  // },
 ]
 
 export {SaleColumnsFacture}

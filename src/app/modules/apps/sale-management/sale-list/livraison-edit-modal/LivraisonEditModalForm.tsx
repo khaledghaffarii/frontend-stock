@@ -209,11 +209,14 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
           style={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            marginBottom: 50,
           }}
-          className=''
         >
-          <div>
+          <div
+            style={{
+              paddingRight: 50,
+            }}
+          >
             <BootstrapForm.Label>Date de vente :</BootstrapForm.Label>{' '}
             <div className='input-group date w-100 mb-12 ' data-provide='datepicker'>
               <input
@@ -225,20 +228,9 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
               />
             </div>
           </div>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            width: '100%',
-            marginBottom: 50,
-          }}
-        >
           <BootstrapForm.Group>
             <BootstrapForm.Label>Sélectionner le client :</BootstrapForm.Label>
-            <div className='mb-10'>
+            <div className='mb-10 w-100'>
               <select
                 {...formik.getFieldProps('client_id')}
                 data-allow-clear='true'
@@ -248,7 +240,6 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                   //   (form: any) => form.id === product_Id
                   // )
                   // formik.setFieldValue('categoryId', e.target.value)
-
                   formik.setFieldValue('client_id', e.target.value)
                   setClientId(e.target.value)
                 }}
@@ -256,7 +247,7 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                 name='client_id'
                 value={clientId}
                 className={clsx(
-                  'form-select  fw-bolder w-25',
+                  'form-select  fw-bolder w-100',
                   {'is-invalid': formik.touched.client_id && formik.errors.client_id},
                   {
                     'is-valid': formik.touched.client_id && !formik.errors.client_id,
@@ -264,7 +255,7 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                 )}
               >
                 <option value='' disabled selected>
-                  choisi un client
+                  Choisi un Client
                 </option>
                 {clientData &&
                   clientData.map((client: any) => (
@@ -275,44 +266,35 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
               </select>
             </div>
           </BootstrapForm.Group>
-          {oneClient && (
-            <div className='mb-4'>
-              <h5>Détails du client</h5>
-
-              <div className='table-responsive'>
-                <table className='table table-bordered'>
-                  <thead>
-                    <tr>
-                      <th className='fw-bold '>Nom et prénom</th>
-                      <th className='fw-bold '>Société</th>
-                      <th className='fw-bold '>Email</th>
-                      <th className='fw-bold '>Téléphone</th>
-                      <th className='fw-bold '>Adresse</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{oneClient.fullname}</td>
-                      <td>{oneClient.company}</td>
-                      <td>{oneClient.email}</td>
-                      <td>{oneClient.phone}</td>
-                      <td>{oneClient.address}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
         </div>
-        {!showProductSelect && (
-          <Row>
-            <Col>
-              <Button variant='success' onClick={handleAddProductClick}>
-                Ajouter un produit
-              </Button>
-            </Col>
-          </Row>
+        {oneClient && (
+          <div className='mb-12'>
+            <h3 className='mb-12'>Détails du client</h3>
+            <div className='table-responsive'>
+              <table className='table table-bordered'>
+                <thead>
+                  <tr>
+                    <th className='fw-bold '>Nom et prénom</th>
+                    <th className='fw-bold '>Société</th>
+                    <th className='fw-bold '>Email</th>
+                    <th className='fw-bold '>Téléphone</th>
+                    <th className='fw-bold '>Adresse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{oneClient.fullname}</td>
+                    <td>{oneClient.company}</td>
+                    <td>{oneClient.email}</td>
+                    <td>{oneClient.phone}</td>
+                    <td>{oneClient.address}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
+
         {showProductSelect && (
           <div
             style={{
@@ -363,8 +345,8 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
             </BootstrapForm.Group>
 
             {oneProduct && (
-              <div className='mb-4'>
-                <h5>Détails du Produit</h5>
+              <div className='mb-12 mt-12'>
+                <h3 className='mb-12'>Détails du Produit</h3>
 
                 <div className='table-responsive'>
                   <table className='table table-bordered'>
@@ -393,6 +375,18 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
             <div className='mt-5 mb-5 '>
               <Row className='align-items-center'>
                 <Col md={2}>
+                  {!showProductSelect && (
+                    <Row>
+                      <Col>
+                        <Button
+                          variant='outline-success border border-success'
+                          onClick={handleAddProductClick}
+                        >
+                          Ajouter un produit
+                        </Button>
+                      </Col>
+                    </Row>
+                  )}
                   <BootstrapForm.Group>
                     <div className=' fv-row d-flex flex-column mt-5  fv-row'>
                       <BootstrapForm.Control
@@ -406,11 +400,11 @@ const LivraisonEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                       </p>
 
                       {/* <BootstrapForm.Control
-                        type='text'
-                        value={oneProduct.category.name}
-                        readOnly
-                        className='flex-grow-1  fw-light text-start border-0 '
-                      /> */}
+                      type='text'
+                      value={oneProduct.category.name}
+                      readOnly
+                      className='flex-grow-1  fw-light text-start border-0 '
+                    /> */}
                     </div>
                   </BootstrapForm.Group>
                 </Col>

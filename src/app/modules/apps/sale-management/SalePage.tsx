@@ -12,7 +12,7 @@ import {useAuth} from '../../auth'
 import {useListView} from './sale-list/core/ListViewProvider'
 import {getSaleById} from './sale-list/core/_requests'
 import {useIntl} from 'react-intl'
-import SaleView from './SaleView'
+import FactureView from './FactureView'
 
 const salesBreadcrumbs: Array<PageLink> = [
   {
@@ -111,11 +111,11 @@ const SalePage = () => {
           }
         />
         <Route
-          path='/sale/view/:id'
+          path='/sale/facture/view/:id'
           element={
             <>
               {/* <PageTitle>Client View</PageTitle> */}
-              <SaleView className={''} sale={sale} />
+              <FactureView className={''} sale={sale} />
             </>
           }
         />

@@ -25,7 +25,7 @@ type Props = {
   sale: Sale | undefined
 }
 
-const SaleView: React.FC<Props> = ({className, sale}) => {
+const FactureView: React.FC<Props> = ({className, sale}) => {
   const {id} = useParams<{id: any}>()
   const {auth} = useAuth()
   const [saleData, setSaleData] = useState<any>('')
@@ -83,61 +83,87 @@ const SaleView: React.FC<Props> = ({className, sale}) => {
           <div className='col-lg-12'>
             <div className='card'>
               <div className='card-body'>
-                <div className='invoice-title'>
-                  <h4 className='mb-5'>vente Facturé</h4>
-                  <h4 className='float-end' style={{fontSize: '15px'}}>
-                    {saleData?.refInvoice}
-                    <span
-                      className='badge bg-success'
-                      style={{fontSize: '12px', marginLeft: '8px'}}
-                    >
-                      Payé
-                    </span>
-                  </h4>
-                  <div className='mb-4'>
-                    <h2 className='mb-1 text-muted'>{saleData?.client?.company}</h2>
+                <div className='d-flex flex-row justify-content-between'>
+                  <img
+                    alt='Logo'
+                    src={toAbsoluteUrl('/media/logos/default.svg')}
+                    className='h-25px app-sidebar-logo-default theme-light-show mt-8'
+                  />
+                  <div className='d-flex flex-column text-end mt-5'>
+                    <h4 className='mb-5 '>Facture</h4>
+                    <h4 className='float-end' style={{fontSize: '15px'}}>
+                      {saleData?.refInvoice}
+                      <span
+                        className='badge bg-success'
+                        style={{fontSize: '12px', marginLeft: '8px'}}
+                      >
+                        Payé
+                      </span>
+                    </h4>
                   </div>
-                  <div className='text-muted'>
-                    <p className='mb-1'>{saleData?.client?.fullname}</p>
-                    <p className='mb-1'>{saleData?.client?.address}</p>
-                    <p className='mb-1'>
-                      <i className='uil uil-envelope-alt '></i> {saleData?.client?.email}
-                    </p>
-                    <p>
-                      <i className='uil uil-phone '></i> {saleData?.client?.phone}
-                    </p>
+                </div>
+
+                <hr className='my-4' />
+                <div className=''>
+                  <div>
+                    <h6 className='mb-3 w-75'>{saleData?.client?.company}</h6>
+                  </div>
+                  <div>
+                    <p className='mb-3 text-dark w-75'>{saleData?.client?.fullname}</p>
+                  </div>
+
+                  <div>
+                    <p className='mb-3 text-dark w-75'>{saleData?.client?.address}</p>
                   </div>
                 </div>
 
                 <hr className='my-4' />
 
-                <div className='row'>
-                  <div className='col-sm-6'></div>
-                  <div className='col-12'>
-                    <div className='text-muted text-sm-start mb-12 mt-8'>
-                      <div className='d-flex w-25 flex-row justify-content-between'>
-                        <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Numéro de vente :</h5>
-                        <p className='text-dark'>#{saleData?.numInvoice}</p>
+                <div className='d-flex flex-row justify-content-between'>
+                  <div>
+                    <h6>Facturer à :</h6>
+                    <p className='mb-3 text-dark w-75 mt-8 fw-bold'>{saleData?.client?.fullname}</p>
+                    <div>
+                      <h6 className='mb-3 w-75'>{saleData?.client?.company}</h6>
+                    </div>
+                    <div className=''>
+                      <div>
+                        <p className='mb-3 text-dark w-180px'>{saleData?.client?.email}</p>
                       </div>
-                      <div
-                        className='d-flex w-25 flex-row justify-content-between'
-                        style={{marginTop: '16px'}}
-                      >
-                        <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Date de vente :</h5>
-                        <p className='text-dark'>
-                          {' '}
-                          {moment(saleData.saleDate).format('DD MMMM YYYY, HH:mm')}
-                        </p>
+                      <div>
+                        <p className='mb-3 w-75'>{saleData?.client?.phone}</p>
+                      </div>
+
+                      <div>
+                        <p className='mb-3 text-dark w-75'>{saleData?.client?.address}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=''>
+                    <div className='w-100'>
+                      <div className='text-muted text-sm-start mb-12 '>
+                        <div className='d-flex mx-5 flex-row justify-content-between'>
+                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Numéro de vente :</h5>
+                          <p className='text-dark'>#{saleData?.numInvoice}</p>
+                        </div>
+                        <div
+                          className='d-flex mx-5 flex-row justify-content-between'
+                          style={{marginTop: '16px'}}
+                        >
+                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Date de vente :</h5>
+                          <p className='text-dark'>
+                            {' '}
+                            {moment(saleData.saleDate).format('DD MMMM YYYY, HH:mm')}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className='py-2'>
-                  <h5 style={{fontSize: '15px', marginBottom: 35}}>Résumé de la vente</h5>
-
+                <div className='py-2 mt-8'>
                   <div className='table-responsive'>
-                    <table className='table table-invoice'>
+                    <table className=' table table-striped table-hover'>
                       <thead>
                         <tr>
                           <th style={{width: '70px'}} className='fw-bold '>
@@ -177,8 +203,8 @@ const SaleView: React.FC<Props> = ({className, sale}) => {
                       </tbody>
                     </table>
                     <hr></hr>
-                    <div className='mt-5 table-responsive'>
-                      <table className='table table-striped table-borderless border-0 border-b-2 brc-default-l1 w-25'>
+                    <div className='mt-5 table-responsive mt-12'>
+                      <table className='table table-striped table-borderless border-0 border-b-2 brc-default-l1 w-25 '>
                         <tbody>
                           <tr>
                             <th scope='row' className='fw-bold text-start'>
@@ -236,4 +262,4 @@ const SaleView: React.FC<Props> = ({className, sale}) => {
   )
 }
 
-export default SaleView
+export default FactureView

@@ -76,6 +76,12 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
     saleDate: sale?.saleDate,
     createdAt: sale?.createdAt,
   })
+  const cancel = (withRefresh?: boolean) => {
+    if (withRefresh) {
+      refetch()
+    }
+    setItemIdForUpdate(undefined)
+  }
   const statusOptions = [
     {value: 0, label: 'Facture'},
     {value: 1, label: 'Bon de livraison'},
@@ -166,7 +172,7 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
         setSubmitting(false)
         setItemIdForUpdate(undefined)
         refetch()
-        navigate(`/apps/sale-management/sale/view/${createdSale.id}`)
+        navigate(`/apps/sale-management/sale/facture/view/${createdSale.id}`)
         return createdSale
       } catch (ex: any) {
         console.log('🚀 ~ onSubmit: ~ ex:', ex.response)
@@ -203,11 +209,14 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
           style={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            marginBottom: 50,
           }}
-          className=''
         >
-          <div>
+          <div
+            style={{
+              paddingRight: 50,
+            }}
+          >
             <BootstrapForm.Label>Date de vente :</BootstrapForm.Label>{' '}
             <div className='input-group date w-100 mb-12 ' data-provide='datepicker'>
               <input
@@ -219,48 +228,9 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
               />
             </div>
           </div>
-
-          {/* <BootstrapForm.Group>
-            <BootstrapForm.Label>Sélectionner le statut :</BootstrapForm.Label>
-            <select
-              {...formik.getFieldProps('status')}
-              className={clsx(
-                'form-select  fw-bolder ',
-                {'is-invalid': formik.touched.status && formik.errors.status},
-                {'is-valid': formik.touched.status && !formik.errors.status}
-              )}
-              onChange={(e) => {
-                formik.setFieldValue('status', parseInt(e.target.value))
-                setStatusId(parseInt(e.target.value))
-              }}
-              value={parseInt(statusId)}
-              id='status'
-              name='status'
-            >
-              <option value='' disabled>
-                Choisir un statut
-              </option>
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </BootstrapForm.Group> */}
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            width: '100%',
-            marginBottom: 50,
-          }}
-        >
           <BootstrapForm.Group>
             <BootstrapForm.Label>Sélectionner le client :</BootstrapForm.Label>
-            <div className='mb-10'>
+            <div className='mb-10 w-100'>
               <select
                 {...formik.getFieldProps('client_id')}
                 data-allow-clear='true'
@@ -270,7 +240,6 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                   //   (form: any) => form.id === product_Id
                   // )
                   // formik.setFieldValue('categoryId', e.target.value)
-
                   formik.setFieldValue('client_id', e.target.value)
                   setClientId(e.target.value)
                 }}
@@ -278,7 +247,7 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                 name='client_id'
                 value={clientId}
                 className={clsx(
-                  'form-select  fw-bolder w-25',
+                  'form-select  fw-bolder w-100',
                   {'is-invalid': formik.touched.client_id && formik.errors.client_id},
                   {
                     'is-valid': formik.touched.client_id && !formik.errors.client_id,
@@ -286,7 +255,7 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
                 )}
               >
                 <option value='' disabled selected>
-                  choisi un client
+                  Choisi un Client
                 </option>
                 {clientData &&
                   clientData.map((client: any) => (
@@ -297,44 +266,35 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
               </select>
             </div>
           </BootstrapForm.Group>
-          {oneClient && (
-            <div className='mb-4'>
-              <h5>Détails du client</h5>
-
-              <div className='table-responsive'>
-                <table className='table table-bordered'>
-                  <thead>
-                    <tr>
-                      <th className='fw-bold '>Nom et prénom</th>
-                      <th className='fw-bold '>Société</th>
-                      <th className='fw-bold '>Email</th>
-                      <th className='fw-bold '>Téléphone</th>
-                      <th className='fw-bold '>Adresse</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{oneClient.fullname}</td>
-                      <td>{oneClient.company}</td>
-                      <td>{oneClient.email}</td>
-                      <td>{oneClient.phone}</td>
-                      <td>{oneClient.address}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
         </div>
-        {!showProductSelect && (
-          <Row>
-            <Col>
-              <Button variant='success' onClick={handleAddProductClick}>
-                Ajouter un produit
-              </Button>
-            </Col>
-          </Row>
+        {oneClient && (
+          <div className='mb-12'>
+            <h3 className='mb-12'>Détails du client</h3>
+            <div className='table-responsive'>
+              <table className='table table-bordered'>
+                <thead>
+                  <tr>
+                    <th className='fw-bold '>Nom et prénom</th>
+                    <th className='fw-bold '>Société</th>
+                    <th className='fw-bold '>Email</th>
+                    <th className='fw-bold '>Téléphone</th>
+                    <th className='fw-bold '>Adresse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{oneClient.fullname}</td>
+                    <td>{oneClient.company}</td>
+                    <td>{oneClient.email}</td>
+                    <td>{oneClient.phone}</td>
+                    <td>{oneClient.address}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
+
         {showProductSelect && (
           <div
             style={{
@@ -385,8 +345,8 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
             </BootstrapForm.Group>
 
             {oneProduct && (
-              <div className='mb-4'>
-                <h5>Détails du Produit</h5>
+              <div className='mb-12 mt-12'>
+                <h3 className='mb-12'>Détails du Produit</h3>
 
                 <div className='table-responsive'>
                   <table className='table table-bordered'>
@@ -415,6 +375,18 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
             <div className='mt-5 mb-5 '>
               <Row className='align-items-center'>
                 <Col md={2}>
+                  {!showProductSelect && (
+                    <Row>
+                      <Col>
+                        <Button
+                          variant='outline-success border border-success'
+                          onClick={handleAddProductClick}
+                        >
+                          Ajouter un produit
+                        </Button>
+                      </Col>
+                    </Row>
+                  )}
                   <BootstrapForm.Group>
                     <div className=' fv-row d-flex flex-column mt-5  fv-row'>
                       <BootstrapForm.Control
@@ -649,7 +621,7 @@ const FactureEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
           </table>
         </div>
         <div className='w-100 mt-4 d-flex justify-content-center m-5 gap-8'>
-          <Button onClick={() => navigate(-1)} variant='secondary'>
+          <Button onClick={() => cancel()} variant='secondary'>
             Annuler
           </Button>
           <Button type='submit' variant='success'>

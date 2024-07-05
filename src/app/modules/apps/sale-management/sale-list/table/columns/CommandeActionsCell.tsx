@@ -13,7 +13,7 @@ type Props = {
   id: Array<ID>
 }
 
-const SaleActionsCell: FC<Props> = ({id}) => {
+const CommandeActionCell: FC<Props> = ({id}) => {
   const {setItemIdForUpdate} = useListView()
   const {query} = useQueryResponse()
   const queryClient = useQueryClient()
@@ -25,7 +25,7 @@ const SaleActionsCell: FC<Props> = ({id}) => {
   const handleShowModal = () => setShowModal(true)
   const handleCloseModal = () => setShowModal(false)
   const token: any = auth?.token
-
+  const {selected, clearSelected} = useListView()
   useEffect(() => {
     MenuComponent.reinitialization()
   }, [])
@@ -40,6 +40,7 @@ const SaleActionsCell: FC<Props> = ({id}) => {
       console.log(`Conversion en ${newStatus} réussie pour la vente avec ID: ${id}`)
 
       queryClient.invalidateQueries([`${QUERIES.CLIENTS_LIST}-${query}`])
+      clearSelected()
       handleCloseModal()
     } catch (error) {
       console.error('Erreur lors de la conversion de statut :', error)
@@ -58,7 +59,7 @@ const SaleActionsCell: FC<Props> = ({id}) => {
           <Modal.Title>Convertir le document</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Convertir Devis en :</p>
+          <p>Convertir le Bon commande en :</p>
           <div className='d-flex flex-row p-3'>
             <div className='form-check mb-2 px-8'>
               <input
@@ -95,11 +96,11 @@ const SaleActionsCell: FC<Props> = ({id}) => {
                 name='status'
                 id='status2'
                 value='2'
-                checked={selectedStatus === 2}
-                onChange={() => setSelectedStatus(2)}
+                checked={selectedStatus === 3}
+                onChange={() => setSelectedStatus(3)}
               />
               <label className='form-check-label text-dark' htmlFor='status2'>
-                Bon de commande
+                Devis
               </label>
             </div>
           </div>
@@ -121,4 +122,4 @@ const SaleActionsCell: FC<Props> = ({id}) => {
   )
 }
 
-export {SaleActionsCell}
+export {CommandeActionCell}

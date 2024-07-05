@@ -19,7 +19,7 @@ const SaleInfoCell: FC<Props> = ({sale}) => {
       <div className=''>
         <p
           onClick={() => {
-            navigate(`/apps/sale-management/sale/view/${sale.id}`)
+            navigate(`/apps/sale-management/sale/facture/view/${sale.id}`)
           }}
           className='text-primary mt-4'
           style={{

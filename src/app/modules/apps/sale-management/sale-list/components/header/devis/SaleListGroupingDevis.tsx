@@ -6,7 +6,7 @@ import {deleteSale} from '../../../core/_requests'
 import {useAuth} from '../../../../../../auth'
 import {useEffect, useRef} from 'react'
 import {Modal as BootstrapModal} from 'bootstrap'
-import {SaleActionsCell} from '../../../table/columns/SaleActionsCell'
+import {DevisActionsCell} from '../../../table/columns/DevisActionsCell'
 const SaleListGroupingDevis = () => {
   const {currentUser, auth} = useAuth()
   //@ts-ignore
@@ -46,7 +46,8 @@ const SaleListGroupingDevis = () => {
       <button type='button' className='btn btn-danger' onClick={handleDeleteClick}>
         Delete Selected
       </button>
-      <SaleActionsCell id={selected} />
+      {selected.length <= 1 && <DevisActionsCell id={selected} />}
+
       <div className='modal' ref={modalRef}>
         <div className='modal-dialog modal-dialog-centered'>
           <div className='modal-content'>

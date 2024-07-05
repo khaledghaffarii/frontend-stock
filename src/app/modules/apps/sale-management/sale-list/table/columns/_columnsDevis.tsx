@@ -8,7 +8,7 @@ import {SaleSelectionHeader} from './SaleSelectionHeader'
 import {Achat} from '../../core/_models'
 import moment from 'moment'
 import {formatPhone, handleStatus, truncateString} from '../../../../../../../_metronic/helpers'
-import {SaleActionsCell} from './SaleActionsCell'
+import {SaleActionsCell} from './DevisActionsCell'
 const SaleColumnsDevis: ReadonlyArray<Column<Achat>> = [
   {
     Header: (props) => <SaleSelectionHeader tableProps={props} />,
