@@ -153,15 +153,34 @@ const SidebarMenuMain = () => {
         />
       </SidebarMenuItemWithSub>
       <SidebarMenuItemWithSub
-        to='/apps/achat-management'
+        to='/apps/sale-management'
         title='Gestion des ventes'
         fontIcon='bi-chat-left'
         icon='/media/icons/duotune/user/sale.svg'
       >
         <SidebarMenuItem
-          to='/apps/sale-management/sale'
-          title='Facture client'
-          icon='/media/icons/duotune/user/invoice.svg'
+          to='apps/sale-management/sale/facture'
+          title='Facture '
+          hasBullet={true}
+          // icon='/media/icons/duotune/user/facture.svg'
+        />
+        <SidebarMenuItem
+          to='apps/sale-management/sale/devis'
+          title='Devis '
+          hasBullet={true}
+          //icon='/media/icons/duotune/user/invoice.svg'
+        />
+        <SidebarMenuItem
+          to='/apps/sale-management/sale/livraison'
+          title='Bon de livraison '
+          hasBullet={true}
+          //icon='/media/icons/duotune/user/invoice.svg'
+        />
+        <SidebarMenuItem
+          to='/apps/sale-management/sale/commande'
+          title='Bon de commande '
+          hasBullet={true}
+          // icon='/media/icons/duotune/general/gen029.svg'
         />
       </SidebarMenuItemWithSub>
       {/* <SidebarMenuItem

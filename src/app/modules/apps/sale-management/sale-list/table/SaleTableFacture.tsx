@@ -3,32 +3,27 @@ import {useTable, ColumnInstance, Row} from 'react-table'
 import {CustomHeaderColumn} from './columns/CustomHeaderColumn'
 import {CustomRow} from './columns/CustomRow'
 import {useQueryResponseData, useQueryResponseLoading} from '../core/QueryResponseProvider'
-import {SaleColumns} from './columns/_columns'
+import {SaleColumnsFacture} from './columns/_columnsFacture'
 import {Sale} from '../core/_models'
 import {SaleListLoading} from '../components/loading/SaleListLoading'
 import {SaleListPagination} from '../components/pagination/SaleListPagination'
 import {KTCardBody} from '../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../core/QueryRequestProvider'
 
-const SaleTable = () => {
+const SaleTableFacture = () => {
   const {state} = useQueryRequest()
   const achats = useQueryResponseData()
   const isLoading = useQueryResponseLoading()
 
   const filteredData = useMemo(() => {
     if (!state.search) return achats
-    return achats.filter(
-      (achat: Sale) =>
-        //@ts-ignore
-        achat?.refInvoice?.toLowerCase().includes(state.search.toLowerCase()) ||
-        //@ts-ignore
-        achat?.product.name?.toLowerCase().includes(state?.search?.toLowerCase()) ||
-        //@ts-ignore
-        achat?.supplier.fullname?.toLowerCase().includes(state?.search?.toLowerCase())
+    return achats.filter((achat: Sale) =>
+      //@ts-ignore
+      achat?.refInvoice?.toLowerCase().includes(state.search.toLowerCase())
     )
   }, [achats, state.search])
 
-  const columns = useMemo(() => SaleColumns, [])
+  const columns = useMemo(() => SaleColumnsFacture, [])
   const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = useTable({
     columns,
     data: filteredData,
@@ -78,4 +73,4 @@ const SaleTable = () => {
   )
 }
 
-export {SaleTable}
+export {SaleTableFacture}

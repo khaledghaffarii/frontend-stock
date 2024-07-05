@@ -10,13 +10,13 @@ import {
   stringifyRequestQuery,
   WithChildren,
 } from '../../../../../../_metronic/helpers'
-import {getSale} from './_requests'
+import {getBonCommande, getBonLivraison, getDevis, getFacture, getSale} from './_requests'
 import {Sale} from './_models'
 import {useQueryRequest} from './QueryRequestProvider'
 import {useAuth} from '../../../../auth'
 
 const QueryResponseContext = createResponseContext<Sale>(initialQueryResponse)
-const QueryResponseProvider: FC<WithChildren> = ({children}) => {
+const QueryResponseProviderFacture: FC<WithChildren> = ({children}) => {
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
 
@@ -36,7 +36,7 @@ const QueryResponseProvider: FC<WithChildren> = ({children}) => {
     `${QUERIES.CLIENTS_LIST}-${query}`,
     () => {
       if (auth && auth.token) {
-        return getSale(query, auth.token)
+        return getFacture(query, auth.token)
       }
     },
     {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}
@@ -48,7 +48,102 @@ const QueryResponseProvider: FC<WithChildren> = ({children}) => {
     </QueryResponseContext.Provider>
   )
 }
+const QueryResponseProviderDevis: FC<WithChildren> = ({children}) => {
+  const {state} = useQueryRequest()
+  const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
 
+  const updatedQuery = useMemo(() => stringifyRequestQuery(state), [state])
+  const {currentUser, auth} = useAuth()
+  useEffect(() => {
+    if (query !== updatedQuery) {
+      setQuery(updatedQuery)
+    }
+  }, [updatedQuery])
+
+  const {
+    isFetching,
+    refetch,
+    data: response,
+  } = useQuery(
+    `${QUERIES.CLIENTS_LIST}-${query}`,
+    () => {
+      if (auth && auth.token) {
+        return getDevis(query, auth.token)
+      }
+    },
+    {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}
+  )
+
+  return (
+    <QueryResponseContext.Provider value={{isLoading: isFetching, refetch, response, query}}>
+      {children}
+    </QueryResponseContext.Provider>
+  )
+}
+const QueryResponseProviderLivraison: FC<WithChildren> = ({children}) => {
+  const {state} = useQueryRequest()
+  const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
+
+  const updatedQuery = useMemo(() => stringifyRequestQuery(state), [state])
+  const {currentUser, auth} = useAuth()
+  useEffect(() => {
+    if (query !== updatedQuery) {
+      setQuery(updatedQuery)
+    }
+  }, [updatedQuery])
+
+  const {
+    isFetching,
+    refetch,
+    data: response,
+  } = useQuery(
+    `${QUERIES.CLIENTS_LIST}-${query}`,
+    () => {
+      if (auth && auth.token) {
+        return getBonLivraison(query, auth.token)
+      }
+    },
+    {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}
+  )
+
+  return (
+    <QueryResponseContext.Provider value={{isLoading: isFetching, refetch, response, query}}>
+      {children}
+    </QueryResponseContext.Provider>
+  )
+}
+const QueryResponseProviderCommande: FC<WithChildren> = ({children}) => {
+  const {state} = useQueryRequest()
+  const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
+
+  const updatedQuery = useMemo(() => stringifyRequestQuery(state), [state])
+  const {currentUser, auth} = useAuth()
+  useEffect(() => {
+    if (query !== updatedQuery) {
+      setQuery(updatedQuery)
+    }
+  }, [updatedQuery])
+
+  const {
+    isFetching,
+    refetch,
+    data: response,
+  } = useQuery(
+    `${QUERIES.CLIENTS_LIST}-${query}`,
+    () => {
+      if (auth && auth.token) {
+        return getBonCommande(query, auth.token)
+      }
+    },
+    {cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false}
+  )
+
+  return (
+    <QueryResponseContext.Provider value={{isLoading: isFetching, refetch, response, query}}>
+      {children}
+    </QueryResponseContext.Provider>
+  )
+}
 const useQueryResponse = () => useContext(QueryResponseContext)
 
 const useQueryResponseData = () => {
@@ -79,7 +174,10 @@ const useQueryResponseLoading = (): boolean => {
 }
 
 export {
-  QueryResponseProvider,
+  QueryResponseProviderFacture,
+  QueryResponseProviderDevis,
+  QueryResponseProviderLivraison,
+  QueryResponseProviderCommande,
   useQueryResponse,
   useQueryResponseData,
   useQueryResponsePagination,

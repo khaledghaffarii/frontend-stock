@@ -52,7 +52,7 @@ const SaleView: React.FC<Props> = ({className, sale}) => {
           setSaleData(data?.data)
         }
       } catch (error) {
-        console.log('🚀 ~ fetchData ~ error:', error)
+        console.log('🚀 ~ fetchData saleview ~ error:', error)
       }
     }
     fetchData()

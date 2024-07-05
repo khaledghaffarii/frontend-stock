@@ -8,7 +8,7 @@ import {SaleSelectionHeader} from './SaleSelectionHeader'
 import {Achat} from '../../core/_models'
 import moment from 'moment'
 import {formatPhone, handleStatus, truncateString} from '../../../../../../../_metronic/helpers'
-const SaleColumns: ReadonlyArray<Column<Achat>> = [
+const SaleColumnsLivraison: ReadonlyArray<Column<Achat>> = [
   {
     Header: (props) => <SaleSelectionHeader tableProps={props} />,
     id: 'selection',
@@ -126,7 +126,7 @@ const SaleColumns: ReadonlyArray<Column<Achat>> = [
   },
   {
     Header: (props) => (
-      <SaleCustomHeader tableProps={props} title='Prix total - TND ' className='min-w-125px' />
+      <SaleCustomHeader tableProps={props} title='Status' className='min-w-125px' />
     ),
     accessor: 'status',
     Cell: ({row}) => (
@@ -137,4 +137,4 @@ const SaleColumns: ReadonlyArray<Column<Achat>> = [
   },
 ]
 
-export {SaleColumns}
+export {SaleColumnsLivraison}

@@ -1,11 +1,12 @@
 import {useQuery} from 'react-query'
-import {SaleEditModalForm} from './SaleEditModalForm'
+
 import {isNotEmpty, QUERIES} from '../../../../../../_metronic/helpers'
 import {useListView} from '../core/ListViewProvider'
 import {getSaleById} from '../core/_requests'
 import {useAuth} from '../../../../auth'
+import {DevisEditModalForm} from './DevisEditModalForm'
 
-const SaleEditModalFormWrapper = () => {
+const DevisEditModalFormWrapper = () => {
   const {currentUser, auth} = useAuth()
   //@ts-ignore
   const token: string = auth?.token
@@ -34,14 +35,14 @@ const SaleEditModalFormWrapper = () => {
   )
   if (!itemIdForUpdate) {
     //@ts-ignore
-    return <SaleEditModalForm isUserLoading={isLoading} sale={{id: undefined}} />
+    return <DevisEditModalForm isUserLoading={isLoading} sale={{id: undefined}} />
   }
 
   if (!isLoading && !error && sale) {
-    return <SaleEditModalForm isUserLoading={isLoading} sale={sale} />
+    return <DevisEditModalForm isUserLoading={isLoading} sale={sale} />
   }
 
   return null
 }
 
-export {SaleEditModalFormWrapper}
+export {DevisEditModalFormWrapper}

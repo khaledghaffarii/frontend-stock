@@ -1,12 +1,12 @@
 import {useQueryClient, useMutation} from 'react-query'
-import {QUERIES} from '../../../../../../../_metronic/helpers'
-import {useListView} from '../../core/ListViewProvider'
-import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {deleteSale} from '../../core/_requests'
-import {useAuth} from '../../../../../auth'
+import {QUERIES} from '../../../../../../../../_metronic/helpers'
+import {useListView} from '../../../core/ListViewProvider'
+import {useQueryResponse} from '../../../core/QueryResponseProvider'
+import {deleteSale} from '../../../core/_requests'
+import {useAuth} from '../../../../../../auth'
 import {useEffect, useRef} from 'react'
 import {Modal as BootstrapModal} from 'bootstrap'
-const SaleListGrouping = () => {
+const SaleListGroupingFacture = () => {
   const {currentUser, auth} = useAuth()
   //@ts-ignore
   const token: string = auth?.token
@@ -45,6 +45,7 @@ const SaleListGrouping = () => {
       <button type='button' className='btn btn-danger' onClick={handleDeleteClick}>
         Delete Selected
       </button>
+
       <div className='modal' ref={modalRef}>
         <div className='modal-dialog modal-dialog-centered'>
           <div className='modal-content'>
@@ -73,4 +74,4 @@ const SaleListGrouping = () => {
   )
 }
 
-export {SaleListGrouping}
+export {SaleListGroupingFacture}

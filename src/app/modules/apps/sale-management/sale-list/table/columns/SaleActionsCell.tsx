@@ -1,78 +1,122 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect} from 'react'
-import {useMutation, useQueryClient} from 'react-query'
+import {FC, useEffect, useState} from 'react'
+import {useQueryClient} from 'react-query'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
-import {ID, KTSVG, QUERIES} from '../../../../../../../_metronic/helpers'
+import {ID, QUERIES} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {deleteSale} from '../../core/_requests'
+import {updateSale} from '../../core/_requests'
 import {useAuth} from '../../../../../auth'
+import {Button, Modal, Spinner, Form} from 'react-bootstrap'
+import {SaleListLoading} from '../../components/loading/SaleListLoading'
 
 type Props = {
-  id: ID
-  clientId: Array<ID>
+  id: Array<ID>
 }
 
-const SaleActionsCell: FC<Props> = ({id, clientId}) => {
+const SaleActionsCell: FC<Props> = ({id}) => {
   const {setItemIdForUpdate} = useListView()
   const {query} = useQueryResponse()
   const queryClient = useQueryClient()
   const {currentUser, auth} = useAuth()
-  //@ts-ignore
-  const token: string = auth?.token
+  const [showModal, setShowModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null)
+
+  const handleShowModal = () => setShowModal(true)
+  const handleCloseModal = () => setShowModal(false)
+  const token: any = auth?.token
+
   useEffect(() => {
     MenuComponent.reinitialization()
   }, [])
 
-  const openEditModal = () => {
-    setItemIdForUpdate(id)
-  }
+  const handleConversion = async (newStatus: number | null) => {
+    if (newStatus === null) return
+    setLoading(true)
 
-  const deleteItem = useMutation(() => deleteSale(clientId, token), {
-    // 💡 response of the mutation is passed to onSuccess
-    onSuccess: () => {
-      // ✅ update detail view directly
-      queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
-    },
-  })
+    try {
+      //@ts-ignore
+      await updateSale(id, {status: newStatus}, token)
+      console.log(`Conversion en ${newStatus} réussie pour la vente avec ID: ${id}`)
+
+      queryClient.invalidateQueries([`${QUERIES.CLIENTS_LIST}-${query}`])
+      handleCloseModal()
+    } catch (error) {
+      console.error('Erreur lors de la conversion de statut :', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
-      <a
-        href='#'
-        className='btn btn-light btn-active-light-primary btn-sm'
-        data-kt-menu-trigger='click'
-        data-kt-menu-placement='bottom-end'
-      >
-        Actions
-        <KTSVG path='/media/icons/duotune/arrows/arr072.svg' className='svg-icon-5 m-0' />
-      </a>
-      {/* begin::Menu */}
-      <div
-        className='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4'
-        data-kt-menu='true'
-      >
-        {/* begin::Menu item */}
-        <div className='menu-item px-3'>
-          <a className='menu-link px-3' onClick={openEditModal}>
-            Edit
-          </a>
-        </div>
-        {/* end::Menu item */}
-
-        {/* begin::Menu item */}
-        <div className='menu-item px-3'>
-          <a
-            className='menu-link px-3'
-            data-kt-users-table-filter='delete_row'
-            onClick={async () => await deleteItem.mutateAsync()}
+      <Button variant='link' className='text-primary mx-5' onClick={handleShowModal}>
+        Convertir
+      </Button>
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Convertir le document</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Convertir Devis en :</p>
+          <div className='d-flex flex-row p-3'>
+            <div className='form-check mb-2 px-8'>
+              <input
+                className='form-check-input'
+                type='radio'
+                name='status'
+                id='status0'
+                value='0'
+                checked={selectedStatus === 0}
+                onChange={() => setSelectedStatus(0)}
+              />
+              <label className='form-check-label text-dark' htmlFor='status0'>
+                Facture
+              </label>
+            </div>
+            <div className='form-check mb-2 px-8'>
+              <input
+                className='form-check-input'
+                type='radio'
+                name='status'
+                id='status1'
+                value='1'
+                checked={selectedStatus === 1}
+                onChange={() => setSelectedStatus(1)}
+              />
+              <label className='form-check-label text-dark' htmlFor='status1'>
+                Bon de livraison
+              </label>
+            </div>
+            <div className='form-check mb-2 px-8'>
+              <input
+                className='form-check-input'
+                type='radio'
+                name='status'
+                id='status2'
+                value='2'
+                checked={selectedStatus === 2}
+                onChange={() => setSelectedStatus(2)}
+              />
+              <label className='form-check-label text-dark' htmlFor='status2'>
+                Bon de commande
+              </label>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant='primary'
+            onClick={() => handleConversion(selectedStatus)}
+            disabled={selectedStatus === null || loading}
           >
-            Delete
-          </a>
-        </div>
-        {/* end::Menu item */}
-      </div>
-      {/* end::Menu */}
+            {loading ? <SaleListLoading /> : 'Valider'}
+          </Button>
+          <Button variant='secondary' onClick={handleCloseModal}>
+            Annuler
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   )
 }

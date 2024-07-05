@@ -1,6 +1,11 @@
 import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
-import {SaleListWrapper} from './sale-list/SaleList'
+import {
+  SaleListWrapperCommande,
+  SaleListWrapperDevis,
+  SaleListWrapperFacture,
+  SaleListWrapperLivraison,
+} from './sale-list/SaleList'
 import {QUERIES, isNotEmpty} from '../../../../_metronic/helpers'
 import {useQuery} from 'react-query'
 import {useAuth} from '../../auth'
@@ -11,8 +16,26 @@ import SaleView from './SaleView'
 
 const salesBreadcrumbs: Array<PageLink> = [
   {
-    title: 'Géstion des vente',
-    path: '/apps/sale-management/sale',
+    title: 'Géstion des Bon de commande',
+    path: '/apps/sale-management/sale/commande',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: 'Géstion des Devis',
+    path: '/apps/sale-management/sale/devis',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: 'Géstion des Factures',
+    path: '/apps/sale-management/sale/facture',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: 'Géstion des Bon de livraison',
+    path: '/apps/sale-management/sale/livraison',
     isSeparator: false,
     isActive: false,
   },
@@ -52,11 +75,38 @@ const SalePage = () => {
     <Routes>
       <Route element={<Outlet />}>
         <Route
-          path='sale'
+          path='sale/commande'
           element={
             <>
-              <PageTitle breadcrumbs={salesBreadcrumbs}>List des ventes</PageTitle>
-              <SaleListWrapper />
+              <PageTitle breadcrumbs={salesBreadcrumbs}>List des facture</PageTitle>
+              <SaleListWrapperCommande />
+            </>
+          }
+        />
+        <Route
+          path='sale/facture'
+          element={
+            <>
+              <PageTitle breadcrumbs={salesBreadcrumbs}>List des facture</PageTitle>
+              <SaleListWrapperFacture />
+            </>
+          }
+        />
+        <Route
+          path='sale/devis'
+          element={
+            <>
+              <PageTitle breadcrumbs={salesBreadcrumbs}>List des devis</PageTitle>
+              <SaleListWrapperDevis />
+            </>
+          }
+        />
+        <Route
+          path='sale/livraison'
+          element={
+            <>
+              <PageTitle breadcrumbs={salesBreadcrumbs}>List des Bon de livraison</PageTitle>
+              <SaleListWrapperLivraison />
             </>
           }
         />

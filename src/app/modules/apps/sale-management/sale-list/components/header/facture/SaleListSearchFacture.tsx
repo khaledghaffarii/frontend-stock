@@ -6,14 +6,14 @@ import {
   exportPDF,
   stringifyRequestQuery,
   useDebounce,
-} from '../../../../../../../_metronic/helpers'
-import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {useQueryResponse, useQueryResponseData} from '../../core/QueryResponseProvider'
-import {createMultipleSales, getSale} from '../../core/_requests'
-import {useAuth} from '../../../../../auth'
-import {SaleListLoading} from '../loading/SaleListLoading'
+} from '../../../../../../../../_metronic/helpers'
+import {useQueryRequest} from '../../../core/QueryRequestProvider'
+import {useQueryResponse, useQueryResponseData} from '../../../core/QueryResponseProvider'
+import {createMultipleSales, getFacture, getSale} from '../../../core/_requests'
+import {useAuth} from '../../../../../../auth'
+import {SaleListLoading} from '../../loading/SaleListLoading'
 
-const SaleListSearchComponent = () => {
+const SaleListSearchFacture = () => {
   const {updateState} = useQueryRequest()
   const {refetch} = useQueryResponse()
   const clients = useQueryResponseData()
@@ -30,12 +30,12 @@ const SaleListSearchComponent = () => {
       try {
         const token = auth?.token
         if (token) {
-          const data = await getSale(query, token)
+          const data = await getFacture(query, token)
           //@ts-ignore
           setData(data?.data)
         }
       } catch (error) {
-        console.log('🚀 ~ fetchData ~ error:', error)
+        console.log('🚀 ~ fetchData salesearch ~ error:', error)
       }
     }
     fetchData()
@@ -120,4 +120,4 @@ const SaleListSearchComponent = () => {
   )
 }
 
-export {SaleListSearchComponent}
+export {SaleListSearchFacture}
