@@ -1,6 +1,5 @@
 // @ts-nocheck
 import {Column} from 'react-table'
-import {SaleInfoCell} from './SaleInfoCell'
 
 import {SaleSelectionCell} from './SaleSelectionCell'
 import {SaleCustomHeader} from './SaleCustomHeader'
@@ -8,6 +7,7 @@ import {SaleSelectionHeader} from './SaleSelectionHeader'
 import {Achat} from '../../core/_models'
 import moment from 'moment'
 import {formatPhone, handleStatus, truncateString} from '../../../../../../../_metronic/helpers'
+import {LivraisonInfoCell} from './LivraisonInfoCell'
 const SaleColumnsLivraison: ReadonlyArray<Column<Achat>> = [
   {
     Header: (props) => <SaleSelectionHeader tableProps={props} />,
@@ -27,7 +27,7 @@ const SaleColumnsLivraison: ReadonlyArray<Column<Achat>> = [
     accessor: 'refInvoice',
     Cell: ({row}) => {
       console.log('🚀 ~ row:', row)
-      return <SaleInfoCell sale={row.original} />
+      return <LivraisonInfoCell sale={row.original} />
     },
   },
   {

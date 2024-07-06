@@ -172,7 +172,7 @@ const DevisEditModalForm: FC<Props> = ({sale, isUserLoading}) => {
         setSubmitting(false)
         setItemIdForUpdate(undefined)
         refetch()
-        navigate(`/apps/sale-management/sale/view/${createdSale.id}`)
+        navigate(`/apps/sale-management/sale/devis/view/${createdSale.id}`)
         return createdSale
       } catch (ex: any) {
         console.log('🚀 ~ onSubmit: ~ ex:', ex.response)

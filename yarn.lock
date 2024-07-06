@@ -7874,6 +7874,14 @@ react-table@^7.7.0:
   resolved "https://registry.npmjs.org/react-table/-/react-table-7.7.0.tgz"
   integrity sha512-jBlj70iBwOTvvImsU9t01LjFjy4sXEtclBovl3mTiqjz23Reu0DKnRza4zlLtOPACx6j2/7MrQIthIK1Wi+LIA==
 
+react-to-pdf@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-to-pdf/-/react-to-pdf-1.0.1.tgz#a9a54ba9af9df4213078bf34eb2ffabb752b7263"
+  integrity sha512-ZsIkY6Z5gg3oBhMbWfl+tYwQ12vpPuuAzvCv+MnXchO8l08tElzRkBNAXxfbQNG/EDOHgE5EvWBlvE7ypt/y9A==
+  dependencies:
+    html2canvas "^1.4.1"
+    jspdf "^2.5.1"
+
 react-topbar-progress-indicator@4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/react-topbar-progress-indicator/-/react-topbar-progress-indicator-4.1.1.tgz"

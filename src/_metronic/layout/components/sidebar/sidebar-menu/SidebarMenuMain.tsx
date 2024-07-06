@@ -94,9 +94,9 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem to='/crafted/widgets/feeds' title='Feeds' hasBullet={true} />
       </SidebarMenuItemWithSub> */}
       <div className='menu-item'>
-        {/* <div className='menu-content pt-8 pb-2'>
-          <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Apps</span>
-        </div> */}
+        <div className='menu-content pt-8 pb-2'>
+          <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Contacts</span>
+        </div>
       </div>
       <SidebarMenuItem
         to='/apps/client-management/clients'
@@ -120,9 +120,14 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem to='/apps/chat/group-chat' title='Group Chart' hasBullet={true} />
         <SidebarMenuItem to='/apps/chat/drawer-chat' title='Drawer Chart' hasBullet={true} />
       </SidebarMenuItemWithSub> */}
+      <div className='menu-item'>
+        <div className='menu-content pt-8 pb-2'>
+          <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Stock</span>
+        </div>
+      </div>
       <SidebarMenuItemWithSub
         to='/apps/category-management'
-        title='Produit stock'
+        title='Produit et service'
         fontIcon='bi-chat-left'
         icon='/media/icons/duotune/user/product.svg'
       >
@@ -139,6 +144,13 @@ const SidebarMenuMain = () => {
           hasBullet={false}
         />
       </SidebarMenuItemWithSub>
+      <div className='menu-item'>
+        <div className='menu-content pt-8 pb-2'>
+          <span className='menu-section text-muted text-uppercase fs-8 ls-1'>
+            Mouvements de Stock
+          </span>
+        </div>
+      </div>
       <SidebarMenuItemWithSub
         to='/apps/achat-management'
         title='Gestion des achats'

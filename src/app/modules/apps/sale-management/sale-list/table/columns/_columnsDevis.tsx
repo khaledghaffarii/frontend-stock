@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {Column} from 'react-table'
-import {SaleInfoCell} from './SaleInfoCell'
+import {DevisInfoCell} from './DevisInfoCell'
 
 import {SaleSelectionCell} from './SaleSelectionCell'
 import {SaleCustomHeader} from './SaleCustomHeader'
@@ -28,7 +28,7 @@ const SaleColumnsDevis: ReadonlyArray<Column<Achat>> = [
     accessor: 'refInvoice',
     Cell: ({row}) => {
       console.log('🚀 ~ row:', row)
-      return <SaleInfoCell sale={row.original} />
+      return <DevisInfoCell sale={row.original} />
     },
   },
   {

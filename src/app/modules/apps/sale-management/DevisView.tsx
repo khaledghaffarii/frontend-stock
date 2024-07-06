@@ -26,7 +26,7 @@ type Props = {
   sale: Sale | undefined
 }
 
-const FactureView: React.FC<Props> = ({className, sale}) => {
+const DevisView: React.FC<Props> = ({className, sale}) => {
   const {id} = useParams<{id: any}>()
   const {auth} = useAuth()
   const [saleData, setSaleData] = useState<any>('')
@@ -42,7 +42,7 @@ const FactureView: React.FC<Props> = ({className, sale}) => {
   const totalHT = (saleData?.totalSalePrice - 1) / (1 + tva / 100)
   const totalTTC = saleData?.totalSalePrice - 1
   const netAPayer = saleData?.totalSalePrice
-  const {toPDF, targetRef} = usePDF({filename: `facture-${saleData?.client?.fullname}.pdf`})
+  const {toPDF, targetRef} = usePDF({filename: `devis-${saleData?.client?.fullname}.pdf`})
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -93,14 +93,14 @@ const FactureView: React.FC<Props> = ({className, sale}) => {
                     className='h-25px app-sidebar-logo-default theme-light-show mt-8'
                   />
                   <div className='d-flex flex-column text-end mt-5'>
-                    <h4 className='mb-5 '>Facture</h4>
+                    <h4 className='mb-5 '>Devis</h4>
                     <h4 className='float-end' style={{fontSize: '15px'}}>
                       {saleData?.refInvoice}
                       <span
-                        className='badge bg-success'
+                        className='badge bg-danger'
                         style={{fontSize: '12px', marginLeft: '8px'}}
                       >
-                        Payé
+                        Non Payé
                       </span>
                     </h4>
                   </div>
@@ -146,14 +146,14 @@ const FactureView: React.FC<Props> = ({className, sale}) => {
                     <div className='w-100'>
                       <div className='text-muted text-sm-start mb-12 '>
                         <div className='d-flex mx-5 flex-row justify-content-between'>
-                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Numéro de vente :</h5>
+                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Numéro du devis :</h5>
                           <p className='text-dark'>#{saleData?.numInvoice}</p>
                         </div>
                         <div
                           className='d-flex mx-5 flex-row justify-content-between'
                           style={{marginTop: '16px'}}
                         >
-                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Date de vente :</h5>
+                          <h5 style={{fontSize: '15px', marginBottom: '8px'}}>Date du devis :</h5>
                           <p className='text-dark'>
                             {' '}
                             {moment(saleData.saleDate).format('DD MMMM YYYY, HH:mm')}
@@ -265,4 +265,4 @@ const FactureView: React.FC<Props> = ({className, sale}) => {
   )
 }
 
-export default FactureView
+export default DevisView

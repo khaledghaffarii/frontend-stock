@@ -13,6 +13,9 @@ import {useListView} from './sale-list/core/ListViewProvider'
 import {getSaleById} from './sale-list/core/_requests'
 import {useIntl} from 'react-intl'
 import FactureView from './FactureView'
+import DevisView from './DevisView'
+import LivraisonView from './LivraisonView'
+import CommandeView from './CommandeView'
 
 const salesBreadcrumbs: Array<PageLink> = [
   {
@@ -119,7 +122,35 @@ const SalePage = () => {
             </>
           }
         />
+        <Route
+          path='/sale/devis/view/:id'
+          element={
+            <>
+              {/* <PageTitle>Client View</PageTitle> */}
+              <DevisView className={''} sale={sale} />
+            </>
+          }
+        />
+        <Route
+          path='/sale/livraison/view/:id'
+          element={
+            <>
+              {/* <PageTitle>Client View</PageTitle> */}
+              <LivraisonView className={''} sale={sale} />
+            </>
+          }
+        />
+        <Route
+          path='/sale/commande/view/:id'
+          element={
+            <>
+              {/* <PageTitle>Client View</PageTitle> */}
+              <CommandeView className={''} sale={sale} />
+            </>
+          }
+        />
       </Route>
+
       <Route index element={<Navigate to='/apps/sale-management/sale' />} />
     </Routes>
   )

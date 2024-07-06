@@ -9,7 +9,7 @@ type Props = {
   sale: Sale
 }
 
-const SaleInfoCell: FC<Props> = ({sale}) => {
+const CommandeInfoCell: FC<Props> = ({sale}) => {
   console.log('🚀 ~ sale 177:', sale)
   const navigate = useNavigate()
   return (
@@ -19,7 +19,7 @@ const SaleInfoCell: FC<Props> = ({sale}) => {
       <div className=''>
         <p
           onClick={() => {
-            navigate(`/apps/sale-management/sale/facture/view/${sale.id}`)
+            navigate(`/apps/sale-management/sale/commande/view/${sale.id}`)
           }}
           className='text-primary mt-4'
           style={{
@@ -35,4 +35,4 @@ const SaleInfoCell: FC<Props> = ({sale}) => {
   )
 }
 
-export {SaleInfoCell}
+export {CommandeInfoCell}

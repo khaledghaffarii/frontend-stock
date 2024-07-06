@@ -57,7 +57,7 @@ const AccountHeader: React.FC = () => {
                 </div>
               </div>
 
-              {/* <div className='d-flex my-4'>
+              <div className='d-flex my-4'>
                 <a href='#' className='btn btn-sm btn-light me-2' id='kt_user_follow_button'>
                   <KTSVG
                     path='/media/icons/duotune/arrows/arr012.svg'
@@ -89,10 +89,10 @@ const AccountHeader: React.FC = () => {
                   </button>
                   <Dropdown1 />
                 </div>
-              </div> */}
+              </div>
             </div>
 
-            {/* <div className='d-flex flex-wrap flex-stack'>
+            <div className='d-flex flex-wrap flex-stack'>
               <div className='d-flex flex-column flex-grow-1 pe-8'>
                 <div className='d-flex flex-wrap'>
                   <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
@@ -146,11 +146,11 @@ const AccountHeader: React.FC = () => {
                   ></div>
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
 
-        {/* <div className='d-flex overflow-auto h-55px'>
+        <div className='d-flex overflow-auto h-55px'>
           <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
             <li className='nav-item'>
               <Link
@@ -175,7 +175,7 @@ const AccountHeader: React.FC = () => {
               </Link>
             </li>
           </ul>
-        </div> */}
+        </div>
       </div>
     </div>
   )

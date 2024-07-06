@@ -119,13 +119,13 @@ const HeaderUserMenu: FC = () => {
 
       <div className='menu-item px-5 my-1'>
         <Link to='/crafted/account/settings' className='menu-link px-5'>
-          Account Settings
+          Paramétre du compte
         </Link>
       </div>
 
       <div className='menu-item px-5'>
         <a onClick={logout} className='menu-link px-5'>
-          Sign Out
+          Déconnexion
         </a>
       </div>
     </div>

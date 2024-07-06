@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {Column} from 'react-table'
-import {SaleInfoCell} from './SaleInfoCell'
+import {CommandeInfoCell} from './CommandeInfoCell'
 
 import {SaleSelectionCell} from './SaleSelectionCell'
 import {SaleCustomHeader} from './SaleCustomHeader'
@@ -27,7 +27,7 @@ const SaleColumnsCommande: ReadonlyArray<Column<Achat>> = [
     accessor: 'refInvoice',
     Cell: ({row}) => {
       console.log('🚀 ~ row:', row)
-      return <SaleInfoCell sale={row.original} />
+      return <CommandeInfoCell sale={row.original} />
     },
   },
   {
@@ -37,7 +37,7 @@ const SaleColumnsCommande: ReadonlyArray<Column<Achat>> = [
     accessor: 'product_id',
     // Cell: ({row}) => {
     //   console.log('🚀 ~ row:', row)
-    //   return <SaleInfoCell achat={row.original} />
+    //   return <CommandeInfoCell achat={row.original} />
     // },
     Cell: ({row}) => (
       <div style={{marginTop: 14}}>

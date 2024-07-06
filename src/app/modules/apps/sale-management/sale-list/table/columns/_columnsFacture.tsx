@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {Column} from 'react-table'
-import {SaleInfoCell} from './SaleInfoCell'
+import {SaleInfoCell} from './DevisInfoCell'
 
 import {SaleSelectionCell} from './SaleSelectionCell'
 import {SaleCustomHeader} from './SaleCustomHeader'
@@ -8,6 +8,7 @@ import {SaleSelectionHeader} from './SaleSelectionHeader'
 import {Achat} from '../../core/_models'
 import moment from 'moment'
 import {formatPhone, handleStatus, truncateString} from '../../../../../../../_metronic/helpers'
+import {FactureInfoCell} from './FactureInfoCell'
 const SaleColumnsFacture: ReadonlyArray<Column<Achat>> = [
   {
     Header: (props) => <SaleSelectionHeader tableProps={props} />,
@@ -24,10 +25,10 @@ const SaleColumnsFacture: ReadonlyArray<Column<Achat>> = [
       <SaleCustomHeader tableProps={props} title='Reference ' className='min-w-125px' />
     ),
     // Cell: ({row, data}) => <div>{data.length - row.index}</div>,
-    accessor: 'refInvoice',
+    accessor: 'refInvoices',
     Cell: ({row}) => {
       console.log('🚀 ~ row:', row)
-      return <SaleInfoCell sale={row.original} />
+      return <FactureInfoCell sale={row.original} />
     },
   },
   {
