@@ -15,6 +15,7 @@ import {useQueryRequest} from './product-list/core/QueryRequestProvider'
 import {getCategory} from '../category/category-list/core/_requests'
 import {Container, Row, Col, Image, Badge} from 'react-bootstrap'
 import {ProductTable} from './product-list/table/ProductTable'
+import ProductRapportView from './ProductRapportView'
 
 type Props = {
   className: string
@@ -29,13 +30,17 @@ const ProductView: React.FC<Props> = ({className, product}) => {
   const navigate = useNavigate()
   const {setItemIdForUpdate} = useListView()
   const [categoryId, setCategoryId] = useState<any>('')
-  console.log('🚀 ~ productData?.category?.id:', productData?.category?.id)
+  console.log('🚀 ~ productData?.', productData)
   console.log('🚀 ~ categoryId:', categoryId)
   const {state} = useQueryRequest()
   const [query, setQuery] = useState<string>(stringifyRequestQuery(state))
   const [CategogyData, setCategogyData] = useState<any>()
   const [activeTab, setActiveTab] = useState<string>('overview')
+  const [productName, setProductName] = useState<string>('')
 
+  const [productCategoryName, setProductCategoryName] = useState<string>('')
+  const [productPriceSale, setProductPriceSale] = useState<Number>(0)
+  const [productQuantity, setProductQuantity] = useState<string>('')
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)
   }
@@ -104,6 +109,14 @@ const ProductView: React.FC<Props> = ({className, product}) => {
 
           //@ts-ignore
           setProductData(data?.data)
+          //@ts-ignore
+          setProductName(data?.data.name)
+          //@ts-ignore
+          setProductPriceSale(data?.data.quantity)
+          //@ts-ignore
+          setProductQuantity(data?.data.quantity)
+          //@ts-ignore
+          setProductCategoryName(data?.data?.category?.name)
         }
       } catch (error) {
         console.log('🚀 ~ fetchData ~ error:', error)
@@ -197,10 +210,11 @@ const ProductView: React.FC<Props> = ({className, product}) => {
             </div>
           </div>
           <div>
-            <h4>Pomme</h4>
+            <h4>{productName && productName}</h4>
             <div>
               <span className='text-muted'>Marque :</span> Marque générale
-              <span className='ms-3 text-muted'>Catégorie :</span> fruits
+              <span className='ms-3 text-muted'>Catégorie :</span>{' '}
+              {productCategoryName && productCategoryName}
             </div>
             <div className='d-flex  justify-content-between  ' style={{width: '160vh'}}>
               {' '}
@@ -210,7 +224,9 @@ const ProductView: React.FC<Props> = ({className, product}) => {
                   <div className='text-primary'>Référence interne</div>
                 </div>
                 <div className='me-3 text-center p-3 border'>
-                  <div className='text-muted'>1500,000 TND</div>
+                  <div className='text-muted'>
+                    {productPriceSale && productPriceSale?.toFixed(3)} TND
+                  </div>
                   <div className='text-primary'>Prix public</div>
                 </div>
                 <div className='text-center p-3 border'>
@@ -219,7 +235,10 @@ const ProductView: React.FC<Props> = ({className, product}) => {
                 </div>
               </div>
               <div className='ms-auto text-center p-3 border'>
-                <div className='text-muted fw-bold fs-3'>0</div>
+                <div className='text-muted fw-bold fs-3'>
+                  {' '}
+                  {productQuantity && productQuantity}{' '}
+                </div>
                 <div className='badge bg-success m-3'>En stock</div>
               </div>
             </div>
@@ -560,36 +579,7 @@ const ProductView: React.FC<Props> = ({className, product}) => {
               </div>
             </div>
           )}
-          {activeTab === 'stockMovement' && (
-            <div style={{marginTop: '20px'}}>
-              <KTCard>
-                <div className='card mt-12 p-8 table-responsive text-center'>
-                  <table className='table table-borderless'>
-                    <thead>
-                      <tr>
-                        <th scope='col'>DATE</th>
-                        <th scope='col'>DOCUMENT</th>
-                        <th scope='col'>ÉTAT</th>
-                        <th scope='col'>CONTACT</th>
-                        <th scope='col'>UTILISATEUR</th>
-                        <th scope='col'>QUANTITÉ ENTRANTE</th>
-                        <th scope='col'>QUANTITÉ SORTANTE</th>
-                        <th scope='col'>EN STOCK</th>
-                        <th scope='col'>ENTREPÔT</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td colSpan={9} className='text-center mt-8'>
-                          Il n'y a pas de données à afficher
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </KTCard>
-            </div>
-          )}
+          {activeTab === 'stockMovement' && <ProductRapportView id={id} />}
         </div>
       </div>
     </div>

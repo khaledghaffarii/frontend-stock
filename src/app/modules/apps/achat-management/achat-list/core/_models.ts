@@ -14,6 +14,7 @@ export type Achat = {
     category?: any
     tva?: any
   }
+  supplier?: any
   supplier_id?: {
     id: any
     address?: string

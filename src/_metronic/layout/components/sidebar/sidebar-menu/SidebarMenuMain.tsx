@@ -126,7 +126,7 @@ const SidebarMenuMain = () => {
         </div>
       </div>
       <SidebarMenuItemWithSub
-        to='/apps/category-management'
+        to='/apps/product-management'
         title='Produit et service'
         fontIcon='bi-chat-left'
         icon='/media/icons/duotune/user/product.svg'

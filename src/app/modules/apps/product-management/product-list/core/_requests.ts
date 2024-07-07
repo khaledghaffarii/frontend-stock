@@ -4,7 +4,8 @@ import {Product, ProductsQueryResponse} from './_models'
 
 const API_URL = process.env.REACT_APP_API_URL
 const Product_URL = `${API_URL}/products`
-
+const Purchase_URL = `${API_URL}/purchase`
+const Sale_URL = `${API_URL}/sales`
 const getProduct = (query: string, token: string): Promise<ProductsQueryResponse> => {
   return axios
     .get(`${Product_URL}`, {
@@ -35,6 +36,30 @@ const getProductById = (id: ID, token: string): Promise<Product | undefined> => 
   return axios
     .get(`${Product_URL}/${id}`, {headers})
 
+    .then((response: AxiosResponse<Product>) => response.data)
+    .catch((error) => {
+      console.log('Error:', error)
+      return undefined
+    })
+}
+const getPurchaseByProduct = (id: ID, token: string): Promise<Product | undefined> => {
+  const headers = {
+    'authorization-token': token,
+  }
+  return axios
+    .get(`${Purchase_URL}/product/${id}`, {headers})
+    .then((response: AxiosResponse<Product>) => response.data)
+    .catch((error) => {
+      console.log('Error:', error)
+      return undefined
+    })
+}
+const getSaleByProduct = (id: ID, token: string): Promise<Product | undefined> => {
+  const headers = {
+    'authorization-token': token,
+  }
+  return axios
+    .get(`${Sale_URL}/product/${id}`, {headers})
     .then((response: AxiosResponse<Product>) => response.data)
     .catch((error) => {
       console.log('Error:', error)
@@ -94,6 +119,8 @@ const createMultipleProducts = (file: File, token: string): Promise<Product | un
 }
 
 export {
+  getPurchaseByProduct,
+  getSaleByProduct,
   getProduct,
   getTotalProduct,
   deleteProduct,

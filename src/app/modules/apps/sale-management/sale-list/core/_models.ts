@@ -14,6 +14,7 @@ export type Sale = {
     category?: any
     tva?: any
   }
+  client?: any
   client_id?: {
     id: any
     address?: string
