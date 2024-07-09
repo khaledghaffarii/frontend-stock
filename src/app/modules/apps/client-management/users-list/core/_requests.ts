@@ -16,6 +16,17 @@ const getClient = (query: string, token: string): Promise<ClientsQueryResponse> 
       return res.data
     })
 }
+const getSaleByClient = (id: ID, token: string): Promise<ClientsQueryResponse> => {
+  return axios
+    .get(`${CLIENT_URL}/${id}/sales`, {
+      headers: {
+        'authorization-token': token,
+      },
+    })
+    .then((res: AxiosResponse<ClientsQueryResponse>) => {
+      return res.data
+    })
+}
 const getTotalClient = (token: string): Promise<ClientsQueryResponse> => {
   return axios
     .get(`${API_URL}/total-clients`, {
@@ -94,6 +105,7 @@ const createMultipleClients = (file: File, token: string): Promise<Client | unde
 }
 
 export {
+  getSaleByClient,
   getClient,
   getTotalClient,
   deleteClient,

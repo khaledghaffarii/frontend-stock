@@ -4,10 +4,22 @@ import {Supplier, SuppliersQueryResponse} from './_models'
 
 const API_URL = process.env.REACT_APP_API_URL
 const Supplier_URL = `${API_URL}/suppliers`
-
+const Purchase_URL = `${API_URL}/purchase/supplier`
 const getSupplier = (query: string, token: string): Promise<SuppliersQueryResponse> => {
   return axios
     .get(`${Supplier_URL}`, {
+      headers: {
+        'authorization-token': token,
+      },
+    })
+    .then((res: AxiosResponse<SuppliersQueryResponse>) => {
+      console.log('🚀 ~ .then ~ res:', res)
+      return res.data
+    })
+}
+const getPurchaseBySupplier = (id: ID, token: string): Promise<SuppliersQueryResponse> => {
+  return axios
+    .get(`${Purchase_URL}/${id}`, {
       headers: {
         'authorization-token': token,
       },
@@ -99,6 +111,7 @@ const createMultipleSuppliers = (file: File, token: string): Promise<Supplier | 
 }
 
 export {
+  getPurchaseBySupplier,
   getSupplier,
   getTotalSupplier,
   deleteSupplier,
